@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Your Name] — Cybersecurity Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #070b10;
+      --surface: #0d1520;
+      --surface2: #111d2e;
+      --border: #1a2840;
+      --border2: #243550;
+      --accent: #00d4aa;
+      --accent-dim: rgba(0,212,170,0.12);
+      --accent-border: rgba(0,212,170,0.25);
+      --blue: #4a9eff;
+      --blue-dim: rgba(74,158,255,0.08);
+      --blue-border: rgba(74,158,255,0.2);
+      --amber: #f0a500;
+      --amber-dim: rgba(240,165,0,0.08);
+      --amber-border: rgba(240,165,0,0.2);
+      --purple: #b899ff;
+      --purple-dim: rgba(184,153,255,0.08);
+      --purple-border: rgba(184,153,255,0.2);
+      --text: #d0e4f7;
+      --text-dim: #5a7a99;
+      --text-mid: #8aaccc;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7,11,16,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 0;
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #1D9E75;
+      box-shadow: 0 0 6px #1D9E75;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* HERO */
+    .hero {
+      padding: 6rem 0 4rem;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero-name {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      color: #f0f8ff;
+      line-height: 1.05;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+    .hero-name span { color: var(--accent); }
+    .hero-role {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--blue);
+      margin-bottom: 1.75rem;
+      letter-spacing: 0.03em;
+    }
+    .hero-bio {
+      font-size: 15px;
+      color: var(--text-mid);
+      line-height: 1.8;
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-bio strong { color: var(--text); }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+    .btn-primary:hover {
+      background: rgba(0,212,170,0.2);
+      border-color: var(--accent);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border2);
+    }
+    .btn-secondary:hover {
+      color: var(--text);
+      border-color: var(--text-dim);
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 5rem;
+      background: var(--surface);
+    }
+    .stat {
+      padding: 1.5rem;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 700;
+      color: #f0f8ff;
+      margin-bottom: 4px;
+    }
+    .stat-lbl {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* SECTIONS */
+    section { margin-bottom: 5rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* EDUCATION */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .edu-card:hover { border-color: var(--border2); }
+    .edu-degree {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .edu-field {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .edu-sub { font-size: 12px; color: var(--text-dim); }
+
+    /* CERTS */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .cert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .cert-card:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-dim);
+    }
+    .cert-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cert-name { font-size: 12px; color: var(--text-mid); }
+
+    /* TECH */
+    .tech-group { margin-bottom: 1.75rem; }
+    .tech-group:last-child { margin-bottom: 0; }
+    .tech-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.75rem;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .tech-group-header i { font-size: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip {
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 5px 13px;
+      border: 1px solid;
+      font-family: var(--mono);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s;
+    }
+    .chip:hover { opacity: 0.8; }
+    .chip-net { color: var(--blue); border-color: var(--blue-border); background: var(--blue-dim); }
+    .chip-prog { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+    .chip-os { color: var(--amber); border-color: var(--amber-border); background: var(--amber-dim); }
+    .chip-app { color: var(--purple); border-color: var(--purple-border); background: var(--purple-dim); }
+
+    /* PROJECTS */
+    .proj-empty {
+      border: 1px dashed var(--border2);
+      border-radius: 10px;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .proj-empty-icon { font-size: 36px; color: var(--text-dim); margin-bottom: 1rem; }
+    .proj-empty-title { font-size: 15px; font-weight: 600; color: var(--text-mid); margin-bottom: 0.5rem; }
+    .proj-empty-sub { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; }
+    .proj-empty-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 12px;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      margin-top: 2rem;
+    }
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-left { font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+    .footer-links { display: flex; gap: 10px; }
+
+    /* ANIMATIONS */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in:nth-child(1) { animation-delay: 0.1s; }
+    .fade-in:nth-child(2) { animation-delay: 0.2s; }
+    .fade-in:nth-child(3) { animation-delay: 0.3s; }
+    .fade-in:nth-child(4) { animation-delay: 0.4s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2) { border-right: none; }
+      .stat:nth-child(3), .stat:nth-child(4) { border-top: 1px solid var(--border); }
+      .edu-grid { grid-template-columns: 1fr; }
+      .cert-grid { grid-template-columns: 1fr 1fr; }
+      nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <div class="nav-logo">// portfolio</div>
+      <ul class="nav-links">
+        <li><a href="#education">Education</a></li>
+        <li><a href="#certs">Certs</a></li>
+        <li><a href="#tech">Tech</a></li>
+        <li><a href="#projects">Projects</a></li>
+      </ul>
+      <div class="nav-status"><span class="status-dot"></span>Open to SOC roles</div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow fade-in">Cybersecurity &amp; IT Professional</div>
+      <h1 class="hero-name fade-in">[Your<br><span>Name]</span></h1>
+      <div class="hero-role fade-in">SOC / Threat Detection &nbsp;·&nbsp; Network Security &nbsp;·&nbsp; Incident Response</div>
+      <p class="hero-bio fade-in">
+        Equipped with a <strong>Master's &amp; Bachelor's in Cybersecurity and Information Assurance</strong>, I design secure network architectures, triage threats, and deploy enterprise security solutions. <strong>9x certified</strong> across security analysis, penetration testing, networking, and Linux — targeting a <strong>Tier 1/2 SOC Analyst</strong> role.
+      </p>
+      <div class="hero-actions fade-in">
+        <a href="https://linkedin.com" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+        <a href="mailto:your@email.com" class="btn btn-secondary"><i class="ti ti-mail"></i>Email me</a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat"><div class="stat-num">9x</div><div class="stat-lbl">Certified</div></div>
+      <div class="stat"><div class="stat-num">M.S.</div><div class="stat-lbl">Graduate degree</div></div>
+      <div class="stat"><div class="stat-num">1–3</div><div class="stat-lbl">Years experience</div></div>
+      <div class="stat"><div class="stat-num">SOC</div><div class="stat-lbl">Target role</div></div>
+    </div>
+
+    <!-- EDUCATION -->
+    <section id="education">
+      <div class="section-header">
+        <span class="section-label">Education</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="edu-grid">
+        <div class="edu-card">
+          <div class="edu-degree">M.S.</div>
+          <div class="edu-field">Cybersecurity &amp; Information Assurance</div>
+          <div class="edu-sub">Master of Science</div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-degree">B.S.</div>
+          <div class="edu-field">Cybersecurity &amp; Information Assurance</div>
+          <div class="edu-sub">Bachelor of Science</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATIONS -->
+    <section id="certs">
+      <div class="section-header">
+        <span class="section-label">Certifications</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="cert-grid">
+        <div class="cert-card"><span class="cert-badge">CySA+</span><span class="cert-name">Cybersecurity Analyst</span></div>
+        <div class="cert-card"><span class="cert-badge">PenTest+</span><span class="cert-name">Penetration Testing</span></div>
+        <div class="cert-card"><span class="cert-badge">Security+</span><span class="cert-name">CompTIA</span></div>
+        <div class="cert-card"><span class="cert-badge">CCNA</span><span class="cert-name">Cisco Networking</span></div>
+        <div class="cert-card"><span class="cert-badge">A+</span><span class="cert-name">CompTIA</span></div>
+        <div class="cert-card"><span class="cert-badge">Project+</span><span class="cert-name">CompTIA</span></div>
+        <div class="cert-card"><span class="cert-badge">Linux</span><span class="cert-name">LPI Essentials</span></div>
+        <div class="cert-card"><span class="cert-badge">ITIL 4</span><span class="cert-name">Foundation</span></div>
+        <div class="cert-card"><span class="cert-badge">Kaseya</span><span class="cert-name">VSA X Admin</span></div>
+      </div>
+    </section>
+
+    <!-- TECH -->
+    <section id="tech">
+      <div class="section-header">
+        <span class="section-label">Technical Knowledge</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="tech-group">
+        <div class="tech-group-header" style="color:var(--blue)"><i class="ti ti-network"></i>Networking</div>
+        <div class="chips">
+          <span class="chip chip-net">VLANs</span><span class="chip chip-net">TCP/IP</span><span class="chip chip-net">DHCP</span><span class="chip chip-net">DNS</span><span class="chip chip-net">VPN</span><span class="chip chip-net">EIGRP</span><span class="chip chip-net">RIP</span><span class="chip chip-net">OSPF</span><span class="chip chip-net">Firewall</span><span class="chip chip-net">ACLs</span>
+        </div>
+      </div>
+      <div class="tech-group">
+        <div class="tech-group-header" style="color:var(--accent)"><i class="ti ti-code"></i>Programming</div>
+        <div class="chips">
+          <span class="chip chip-prog">Python</span><span class="chip chip-prog">C</span><span class="chip chip-prog">MySQL</span><span class="chip chip-prog">PowerShell</span>
+        </div>
+      </div>
+      <div class="tech-group">
+        <div class="tech-group-header" style="color:var(--amber)"><i class="ti ti-device-desktop"></i>Operating Systems</div>
+        <div class="chips">
+          <span class="chip chip-os">Linux (Ubuntu, RedHat)</span><span class="chip chip-os">Windows 10</span><span class="chip chip-os">Windows Server 2016/2022</span><span class="chip chip-os">MacOS</span><span class="chip chip-os">Cisco IOS</span><span class="chip chip-os">pfSense</span>
+        </div>
+      </div>
+      <div class="tech-group">
+        <div class="tech-group-header" style="color:var(--purple)"><i class="ti ti-apps"></i>Applications &amp; Platforms</div>
+        <div class="chips">
+          <span class="chip chip-app">VMware</span><span class="chip chip-app">Office 365 Admin</span><span class="chip chip-app">Active Directory</span><span class="chip chip-app">Entra ID / Azure AD</span><span class="chip chip-app">MS Intune</span><span class="chip chip-app">Defender for Endpoint</span><span class="chip chip-app">Cloudflare Zero Trust</span><span class="chip chip-app">Endpoint Protector</span><span class="chip chip-app">Datto EDR</span><span class="chip chip-app">RocketCyber SIEM</span><span class="chip chip-app">Kaseya VSA X</span><span class="chip chip-app">Inky</span><span class="chip chip-app">Nmap</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-header">
+        <span class="section-label">Projects</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="proj-empty">
+        <div class="proj-empty-icon"><i class="ti ti-folder-open"></i></div>
+        <div class="proj-empty-title">No projects yet</div>
+        <div class="proj-empty-sub">Home lab write-ups, detection rules, CTF walkthroughs, and tools will live here as they're completed.</div>
+        <span class="proj-empty-tag">// coming soon</span>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-left">© 2026 [Your Name]</div>
+      <div class="footer-links">
+        <a href="https://linkedin.com" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+        <a href="mailto:your@email.com" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
