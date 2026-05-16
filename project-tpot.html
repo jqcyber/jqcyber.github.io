@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Your Name] — T-Pot Honeypot</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09111a; --surface: #0e1925; --surface2: #131f2e;
+      --border: #1c2d40; --border2: #243850;
+      --accent: #00c49a; --accent-dim: rgba(0,196,154,0.08); --accent-border: rgba(0,196,154,0.18);
+      --blue: #4a9eff; --blue-dim: rgba(74,158,255,0.07); --blue-border: rgba(74,158,255,0.16);
+      --text: #c8dced; --text-dim: #4e6880; --text-mid: #7a9ab8;
+      --mono: 'JetBrains Mono', monospace; --sans: 'Inter', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 2rem; }
+    .container-wide { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(9,17,26,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+    nav .container-wide { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--accent); }
+
+    /* PROJECT HEADER */
+    .proj-header { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+    .proj-meta-top { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .proj-status { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 4px; }
+    .status-live { color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-border); }
+    .proj-category { font-family: var(--mono); font-size: 10px; color: var(--text-dim); padding: 3px 9px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); }
+    .proj-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; color: #e8f4ff; letter-spacing: -0.01em; margin-bottom: 0.75rem; }
+    .proj-summary { font-size: 16px; color: var(--text-mid); line-height: 1.75; margin-bottom: 2rem; }
+    .proj-info-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .proj-info-item { display: flex; flex-direction: column; gap: 4px; }
+    .proj-info-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .proj-info-value { font-size: 13px; color: var(--text); font-weight: 500; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.5rem; }
+    .tag { font-family: var(--mono); font-size: 11px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; }
+
+    /* CONTENT */
+    .proj-content { padding-bottom: 5rem; }
+    .section { margin-bottom: 2.5rem; }
+    .section-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .section-title i { font-size: 16px; color: var(--accent); }
+    p { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 0.25rem; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* CODE BLOCK */
+    .code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.25rem 0; }
+    .code-block-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface2); }
+    .code-block-label { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+    .code-block pre { padding: 1rem; overflow-x: auto; }
+    .code-block code { font-family: var(--mono); font-size: 12px; color: var(--accent); line-height: 1.7; white-space: pre; }
+
+    /* CALLOUT */
+    .callout { display: flex; gap: 12px; padding: 1rem 1.25rem; border-radius: 8px; margin: 1.25rem 0; }
+    .callout-info { background: var(--blue-dim); border: 1px solid var(--blue-border); }
+    .callout-warn { background: rgba(240,165,0,0.07); border: 1px solid rgba(240,165,0,0.2); }
+    .callout-success { background: var(--accent-dim); border: 1px solid var(--accent-border); }
+    .callout i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .callout-info i { color: var(--blue); }
+    .callout-warn i { color: #f0a500; }
+    .callout-success i { color: var(--accent); }
+    .callout p { font-size: 13px; margin-bottom: 0; }
+
+    /* STAT STRIP */
+    .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.5rem 0; background: var(--surface); }
+    .strip-stat { padding: 1.25rem; border-right: 1px solid var(--border); text-align: center; }
+    .strip-stat:last-child { border-right: none; }
+    .strip-num { font-family: var(--mono); font-size: 22px; font-weight: 700; color: #e8f4ff; margin-bottom: 4px; }
+    .strip-lbl { font-size: 11px; color: var(--text-dim); }
+
+    /* IMG PLACEHOLDER */
+    .img-placeholder { background: var(--surface); border: 1px dashed var(--border2); border-radius: 8px; padding: 3rem 2rem; text-align: center; margin: 1.25rem 0; color: var(--text-dim); font-size: 13px; }
+    .img-placeholder i { font-size: 28px; display: block; margin-bottom: 8px; }
+
+    /* BACK NAV */
+    .proj-nav { margin: 4rem 0 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .proj-nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-size: 13px; color: var(--text-mid); transition: all 0.15s; }
+    .proj-nav-btn:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 2rem 0; }
+    footer .container-wide { display: flex; align-items: center; justify-content: space-between; }
+    .footer-left { font-size: 13px; color: var(--text-dim); }
+    .footer-links { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+    .btn-primary { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .btn-primary:hover { background: rgba(0,196,154,0.15); border-color: var(--accent); }
+    .btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--border2); }
+    .btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
+
+    @media (max-width: 640px) {
+      .stat-strip { grid-template-columns: 1fr; }
+      .strip-stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .strip-stat:last-child { border-bottom: none; }
+      .proj-info-row { gap: 1.25rem; }
+      nav .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container-wide">
+      <div class="nav-logo">// project</div>
+      <ul class="nav-links">
+        <li><a href="index.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+      </ul>
+      <a href="projects.html" class="nav-back"><i class="ti ti-arrow-left"></i> All projects</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="proj-header">
+      <div class="proj-meta-top">
+        <span class="proj-status status-live">Completed</span>
+        <span class="proj-category">Home Lab</span>
+      </div>
+      <h1 class="proj-title">T-Pot Honeypot &amp; Threat Intelligence Collection</h1>
+      <p class="proj-summary">Deployed T-Pot, a multi-honeypot platform, to lure and monitor real-world threat actors — capturing live attack data, TTPs, and IOCs to build hands-on threat intelligence experience.</p>
+
+      <div class="proj-info-row">
+        <div class="proj-info-item">
+          <span class="proj-info-label">Category</span>
+          <span class="proj-info-value">Home Lab</span>
+        </div>
+        <div class="proj-info-item">
+          <span class="proj-info-label">Status</span>
+          <span class="proj-info-value">Completed</span>
+        </div>
+        <div class="proj-info-item">
+          <span class="proj-info-label">Platform</span>
+          <span class="proj-info-value">T-Pot CE (Community Edition)</span>
+        </div>
+        <div class="proj-info-item">
+          <span class="proj-info-label">Repo</span>
+          <span class="proj-info-value"><a href="https://github.com/telekom-security/tpotce" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub ↗</a></span>
+        </div>
+      </div>
+
+      <div class="tags">
+        <span class="tag">T-Pot</span>
+        <span class="tag">Honeypot</span>
+        <span class="tag">Threat Intelligence</span>
+        <span class="tag">Linux</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Kibana</span>
+        <span class="tag">Azure</span>
+        <span class="tag">IOC Collection</span>
+        <span class="tag">Home Lab</span>
+      </div>
+    </div>
+
+    <div class="proj-content">
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-info-circle"></i>Overview</div>
+        <p>T-Pot is an all-in-one honeypot platform developed by Deutsche Telekom Security. It bundles over 20 honeypot daemons — including Cowrie, Dionaea, Honeytrap, and more — into a single Docker-based deployment, giving defenders a realistic attack surface to observe adversary behavior in the wild.</p>
+        <p>The goal of this project was to deploy T-Pot in a controlled environment, expose it to the internet, and collect real attack data from threat actors — covering everything from brute-force attempts and credential stuffing to malware drops and exploitation attempts.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-list-check"></i>Objectives</div>
+        <ul>
+          <li>Deploy and configure T-Pot CE on a Linux host exposed to the internet</li>
+          <li>Collect live attack telemetry from real-world threat actors</li>
+          <li>Analyze attacker TTPs, source IPs, payloads, and credentials attempted</li>
+          <li>Build familiarity with threat intelligence collection and log analysis</li>
+          <li>Explore the Kibana dashboards built into T-Pot for visual threat analysis</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-tool"></i>Tools &amp; Environment</div>
+        <p>T-Pot was deployed across two Azure cloud virtual machines in a Hive-Sensor architecture — separating the management and visualization layer from the honeypot sensor layer for better isolation and scalability.</p>
+        <ul>
+          <li><strong>T-Pot CE</strong> — multi-honeypot platform (Docker-based)</li>
+          <li><strong>Microsoft Azure</strong> — cloud hosting for both VMs</li>
+          <li><strong>Linux</strong> — host OS for both the Hive and Sensor</li>
+          <li><strong>Docker / Docker Compose</strong> — container orchestration</li>
+          <li><strong>Kibana</strong> — built-in visualization and log analysis dashboard</li>
+          <li><strong>Elasticsearch</strong> — log storage and indexing backend</li>
+          <li><strong>Cowrie</strong> — SSH/Telnet honeypot for credential capture</li>
+          <li><strong>Dionaea</strong> — malware capture honeypot</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-route"></i>Deployment Process</div>
+
+        <div class="callout callout-warn">
+          <i class="ti ti-alert-triangle"></i>
+          <p><strong>Important:</strong> T-Pot is intentionally exposed to the internet — deploy it on a dedicated, isolated host and never on a machine with access to sensitive data or production networks. A system compromise can never be fully ruled out. Running T-Pot on a home network can attract malicious traffic that puts the rest of the network at risk — a cloud-based VM is strongly recommended.</p>
+        </div>
+
+        <p>T-Pot uses a distributed Hive/Sensor architecture. The <strong>Hive</strong> is the central management and visualization node — running Elasticsearch, Kibana, Logstash, and the web UI. The <strong>Sensor</strong> runs the honeypot daemons and ships all captured log data back to the Hive over an encrypted SSH tunnel.</p>
+
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 1 — Provision Azure VMs</p>
+        <p>Two Azure virtual machines were provisioned: the Hive (16 GB RAM, 256 GB SSD) and the Sensor (8 GB RAM, 128 GB SSD), each running a clean Linux install. Both VMs were placed on public subnets with no inbound firewall restrictions on honeypot ports, ensuring real attacker traffic could reach the Sensor unobstructed. Management access was restricted to a non-default SSH port.</p>
+
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 2 — Install T-Pot on the Hive</p>
+        <p>On the Hive VM, the T-Pot installer was pulled and executed as a non-root user. When prompted for installation type, <strong>H (Hive)</strong> was selected, which installs the full Elastic Stack, NGINX reverse proxy, Kibana dashboards, the GeoIP Attack Map, and all management tooling.</p>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-label">bash — Hive installation</span>
+          </div>
+          <pre><code># Run as a non-root user from $HOME
+env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/install.sh)"
+
+# Select H for Hive when prompted
+# Set a WEB_USER and password for the T-Pot WebUI (BasicAuth)
+# Installer will configure Docker, Logstash, Kibana, NGINX, and reboot</code></pre>
+        </div>
+
+        <p>Once the installer completes, the Hive reboots automatically. T-Pot remaps the system SSH port to <strong>64295</strong> to free up port 22 for the Cowrie SSH honeypot. After reboot, the Kibana dashboard and Attack Map are accessible at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code>.</p>
+
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 3 — Install T-Pot on the Sensor</p>
+        <p>On the Sensor VM, the same installer was run, this time selecting <strong>S (Sensor)</strong>. The Sensor installs only the honeypot daemons and the Logstash forwarder — no Kibana or Elastic Stack. The Sensor does not become active until it is linked to the Hive in the next step.</p>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-label">bash — Sensor installation</span>
+          </div>
+          <pre><code># Run on the Sensor VM as a non-root user from $HOME
+env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/install.sh)"
+
+# Select S for Sensor when prompted
+# Reboot once installation completes</code></pre>
+        </div>
+
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 4 — Connect the Sensor to the Hive (Distributed Deployment)</p>
+        <p>After both VMs are up, the Sensor must be linked to the Hive so it can securely forward its honeypot logs. This is done by running the <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">deploy.sh</code> script from the Hive, which generates SSH keys and configures an encrypted Logstash tunnel between the two nodes.</p>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-label">bash — linking Sensor to Hive</span>
+          </div>
+          <pre><code># On the Hive, generate an SSH key for the Sensor connection
+ssh-keygen  # leave passphrase empty
+
+# Deploy the Sensor from the Hive
+cd ~/tpotce
+./deploy.sh  # follow prompts: enter Sensor IP and credentials
+
+# Verify all containers are running on both nodes
+dps.sh</code></pre>
+        </div>
+
+        <p>Once linked, the Sensor begins transmitting honeypot event data to the Hive's Elasticsearch instance over a hardened SSH tunnel on port 64295. The Hive user created for this connection is restricted to log forwarding only — it cannot open an interactive shell.</p>
+
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 5 — Verify and Monitor</p>
+        <p>With both nodes running, honeypot data flows into Kibana in real time. The T-Pot landing page at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code> provides access to the Kibana dashboard, GeoIP Attack Map, CyberChef, Elasticvue, and SpiderFoot — all pre-configured and ready to use.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-chart-bar"></i>Results &amp; Findings</div>
+        <p>Shortly after going live, the honeypot began receiving a significant volume of inbound attacks. Analysis of the initial data revealed over <strong>5,000 attacks within the first 24 hours</strong> across the honeypot services, with the vast majority targeting <strong>Cowrie</strong>, the SSH honeypot — confirming that SSH remains one of the most actively scanned and attacked services on the internet.</p>
+
+        <div class="stat-strip">
+          <div class="strip-stat">
+            <div class="strip-num">5,000+</div>
+            <div class="strip-lbl">Attacks in first 24 hours</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-num">99%</div>
+            <div class="strip-lbl">Known attacker IPs</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-num">Cowrie</div>
+            <div class="strip-lbl">Most targeted honeypot</div>
+          </div>
+        </div>
+
+        <p>Further inspection of the SSH brute-force data revealed consistent patterns in attacker behavior. The most commonly used username was <strong>root</strong>, and the most common password attempted was <strong>12456</strong> — highlighting how attackers rely heavily on default and weak credentials when targeting internet-exposed SSH services.</p>
+
+        <div class="callout callout-warn">
+          <i class="ti ti-alert-triangle"></i>
+          <p><strong>Notable:</strong> 99% of source IPs were already flagged as known malicious actors in threat intelligence databases — confirming that most of this activity comes from established botnets and repeat offenders.</p>
+        </div>
+
+        <p>The Kibana dashboard provided a real-time visual breakdown of attack telemetry — including origin countries, most targeted ports, top attacker IPs, and credential attempts — turning raw log data into immediately actionable threat intelligence.</p>
+
+        <img src="https://i.imgur.com/HD2QYVC.png" alt="T-Pot Kibana dashboard showing attack telemetry" style="width:100%;border-radius:8px;border:1px solid var(--border);margin:1.25rem 0;display:block;" />
+
+        <div class="callout callout-success">
+          <i class="ti ti-circle-check"></i>
+          <p><strong>Key finding:</strong> The concentration of attacks on Cowrie and the dominance of weak credential attempts confirm that SSH is one of the most targeted services on the internet — and that most attackers rely on automation and known-bad credential lists rather than sophisticated techniques.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><i class="ti ti-school"></i>Lessons Learned</div>
+        <ul>
+          <li><strong>Exposure is instant</strong> — internet-facing systems are discovered and probed almost immediately after going live</li>
+          <li><strong>Weak credentials are the primary attack vector</strong> — root/12456 being the top combo shows attackers default to trivially weak credentials first</li>
+          <li><strong>Known threats dominate</strong> — 99% of source IPs were already in threat intel databases, reinforcing the value of IP reputation feeds</li>
+          <li><strong>SSH is a high-value target</strong> — the overwhelming focus on Cowrie underscores how critical SSH hardening is for any internet-exposed host</li>
+          <li><strong>Cloud-based honeypots are practical</strong> — Azure made it straightforward to spin up isolated, dedicated VMs without impacting other infrastructure</li>
+          <li><strong>Visualization accelerates analysis</strong> — Kibana dashboards turned thousands of raw log lines into immediately readable attack narratives</li>
+        </ul>
+      </div>
+
+      <div class="proj-nav">
+        <a href="projects.html" class="proj-nav-btn">
+          <i class="ti ti-arrow-left"></i> Back to all projects
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="container-wide">
+      <div class="footer-left">© 2026 [Your Name]</div>
+      <div class="footer-links">
+        <a href="https://linkedin.com" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+        <a href="mailto:your@email.com" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
