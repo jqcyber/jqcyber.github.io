@@ -18,7 +18,7 @@
     }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-    .container { max-width: 760px; margin: 0 auto; padding: 0 2rem; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
     .container-wide { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
 
     /* NAV */
@@ -30,8 +30,8 @@
     .nav-links a:hover { color: var(--accent); }
     .nav-back { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
     .nav-back:hover { color: var(--accent); }
-    
-    /* PROJECT HEADER */
+
+    /* PROJECT HEADER — exact mirror of portfolio hero */
     .proj-header { padding: 6rem 0 4rem; }
     .proj-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.25rem; }
     .proj-title { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 600; color: #e8f4ff; line-height: 1.1; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
@@ -45,9 +45,9 @@
     .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag { font-family: var(--mono); font-size: 11px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; }
     .header-divider { height: 1px; background: var(--border); margin-bottom: 3rem; }
-    
+
     /* CONTENT */
-   .proj-content { padding-bottom: 5rem; }
+    .proj-content { padding-bottom: 5rem; }
     .section { margin-bottom: 2.5rem; }
     .section-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
     .section-title i { font-size: 16px; color: var(--accent); }
@@ -81,11 +81,11 @@
     .strip-stat:last-child { border-right: none; }
     .strip-num { font-family: var(--mono); font-size: 22px; font-weight: 700; color: #e8f4ff; margin-bottom: 4px; }
     .strip-lbl { font-size: 11px; color: var(--text-dim); }
-    
+
     /* IMG PLACEHOLDER */
     .img-placeholder { background: var(--surface); border: 1px dashed var(--border2); border-radius: 8px; padding: 3rem 2rem; text-align: center; margin: 1.25rem 0; color: var(--text-dim); font-size: 13px; }
-    .img-placeholder i { font-size: 28px; display: block; margin-bottom: 8p
-      
+    .img-placeholder i { font-size: 28px; display: block; margin-bottom: 8px; }
+
     /* BACK NAV */
     .proj-nav { margin: 4rem 0 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
     .proj-nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-size: 13px; color: var(--text-mid); transition: all 0.15s; }
@@ -113,25 +113,27 @@
 </head>
 <body>
 
-
   <nav>
     <div class="container">
-      <div class="nav-logo">// projects</div>
+      <div class="nav-logo">// portfolio</div>
       <ul class="nav-links">
+        <li><a href="index.html">About</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="index.html#certs">Certs</a></li>
+        <li><a href="index.html#tech">Tech</a></li>
+        <li><a href="projects.html">Projects</a></li>
       </ul>
+      <a href="projects.html" class="nav-back"><i class="ti ti-arrow-left"></i> All projects</a>
     </div>
   </nav>
 
   <div class="container">
 
     <div class="proj-header">
-      <div class="proj-meta-top">
-        <span class="proj-status status-live">Completed</span>
-        <span class="proj-category">Home Lab</span>
-      </div>
-      <h1 class="proj-title">T-Pot Honeypot &amp; Threat Intelligence Collection</h1>
+      <div class="proj-eyebrow">Home Lab · Completed</div>
+      <h1 class="proj-title">T-Pot Honeypot</h1>
+      <div class="proj-role">Threat Intelligence Collection &nbsp;·&nbsp; Azure &nbsp;·&nbsp; Docker &nbsp;·&nbsp; Kibana</div>
       <p class="proj-summary">Deployed T-Pot, a multi-honeypot platform, to lure and monitor real-world threat actors — capturing live attack data, TTPs, and IOCs to build hands-on threat intelligence experience.</p>
-
       <div class="proj-info-row">
         <div class="proj-info-item">
           <span class="proj-info-label">Category</span>
@@ -142,15 +144,14 @@
           <span class="proj-info-value">Completed</span>
         </div>
         <div class="proj-info-item">
-          <span class="proj-info-label">Platform</span>
-          <span class="proj-info-value">T-Pot</span>
+          <span class="proj-info-label">Hosted on</span>
+          <span class="proj-info-value">Microsoft Azure</span>
         </div>
         <div class="proj-info-item">
           <span class="proj-info-label">Repo</span>
           <span class="proj-info-value"><a href="https://github.com/telekom-security/tpotce" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub ↗</a></span>
         </div>
       </div>
-
       <div class="tags">
         <span class="tag">T-Pot</span>
         <span class="tag">Honeypot</span>
@@ -163,7 +164,6 @@
         <span class="tag">Home Lab</span>
       </div>
     </div>
-
     <div class="proj-content">
 
       <div class="section">
@@ -187,9 +187,9 @@
         <div class="section-title"><i class="ti ti-tool"></i>Tools &amp; Environment</div>
         <p>T-Pot was deployed across two Azure cloud virtual machines in a Hive-Sensor architecture — separating the management and visualization layer from the honeypot sensor layer for better isolation and scalability.</p>
         <ul>
-          <li><strong>T-Pot </strong> — multi-honeypot platform (Docker-based)</li>
+          <li><strong>T-Pot</strong> — multi-honeypot platform (Docker-based)</li>
           <li><strong>Microsoft Azure</strong> — cloud hosting for both VMs</li>
-          <li><strong>Linux / Ubuntu Server 26.04 LTS</strong> — host OS for both the Hive and Sensor</li>
+          <li><strong>Linux</strong> — host OS for both the Hive and Sensor</li>
           <li><strong>Docker / Docker Compose</strong> — container orchestration</li>
           <li><strong>Kibana</strong> — built-in visualization and log analysis dashboard</li>
           <li><strong>Elasticsearch</strong> — log storage and indexing backend</li>
@@ -315,8 +315,6 @@ dps.sh</code></pre>
       </div>
 
       <div class="proj-nav">
-        <a href="projects.html" class="proj-nav-btn">
-          <i class="ti ti-arrow-left"></i> Back to all projects
         </a>
       </div>
 
@@ -325,10 +323,10 @@ dps.sh</code></pre>
 
   <footer>
     <div class="container-wide">
-      <div class="footer-left">© 2026 [Your Name]</div>
+      <div class="footer-left">© 2026 Joseph Quintana</div>
       <div class="footer-links">
-        <a href="https://linkedin.com" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
-        <a href="mailto:your@email.com" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
+        <a href="https://linkedin.com/in/joseph-q-630610245" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+        <a href="mailto:jqui247@wgu.edu" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
       </div>
     </div>
   </footer>
