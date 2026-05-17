@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>[Your Name] — T-Pot Honeypot</title>
+  <title>Joseph Quintana — T-Pot Honeypot</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <style>
@@ -22,32 +22,32 @@
     .container-wide { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
 
     /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; background: rgba(9,17,26,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
-    nav .container-wide { display: flex; align-items: center; justify-content: space-between; }
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(7,11,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
     .nav-logo { font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 0.05em; }
     .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-    .nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    .nav-links a { font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.01em; transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
-    .nav-back { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    .nav-back { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
     .nav-back:hover { color: var(--accent); }
-
+    
     /* PROJECT HEADER */
-    .proj-header { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
-    .proj-meta-top { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; }
-    .proj-status { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 4px; }
-    .status-live { color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-border); }
-    .proj-category { font-family: var(--mono); font-size: 10px; color: var(--text-dim); padding: 3px 9px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); }
-    .proj-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; color: #e8f4ff; letter-spacing: -0.01em; margin-bottom: 0.75rem; }
-    .proj-summary { font-size: 16px; color: var(--text-mid); line-height: 1.75; margin-bottom: 2rem; }
-    .proj-info-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .proj-header { padding: 6rem 0 4rem; }
+    .proj-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.25rem; }
+    .proj-title { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 600; color: #e8f4ff; line-height: 1.1; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+    .proj-role { font-family: var(--mono); font-size: 13px; color: var(--blue); margin-bottom: 1.75rem; letter-spacing: 0.03em; }
+    .proj-summary { font-size: 15px; color: var(--text-mid); line-height: 1.8; max-width: 600px; margin-bottom: 2rem; }
+    .proj-summary strong { color: var(--text); }
+    .proj-info-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .proj-info-item { display: flex; flex-direction: column; gap: 4px; }
     .proj-info-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
     .proj-info-value { font-size: 13px; color: var(--text); font-weight: 500; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.5rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag { font-family: var(--mono); font-size: 11px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; }
-
+    .header-divider { height: 1px; background: var(--border); margin-bottom: 3rem; }
+    
     /* CONTENT */
-    .proj-content { padding-bottom: 5rem; }
+   .proj-content { padding-bottom: 5rem; }
     .section { margin-bottom: 2.5rem; }
     .section-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
     .section-title i { font-size: 16px; color: var(--accent); }
@@ -81,11 +81,11 @@
     .strip-stat:last-child { border-right: none; }
     .strip-num { font-family: var(--mono); font-size: 22px; font-weight: 700; color: #e8f4ff; margin-bottom: 4px; }
     .strip-lbl { font-size: 11px; color: var(--text-dim); }
-
+    
     /* IMG PLACEHOLDER */
     .img-placeholder { background: var(--surface); border: 1px dashed var(--border2); border-radius: 8px; padding: 3rem 2rem; text-align: center; margin: 1.25rem 0; color: var(--text-dim); font-size: 13px; }
-    .img-placeholder i { font-size: 28px; display: block; margin-bottom: 8px; }
-
+    .img-placeholder i { font-size: 28px; display: block; margin-bottom: 8p
+      
     /* BACK NAV */
     .proj-nav { margin: 4rem 0 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
     .proj-nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-size: 13px; color: var(--text-mid); transition: all 0.15s; }
@@ -113,14 +113,12 @@
 </head>
 <body>
 
+
   <nav>
-    <div class="container-wide">
-      <div class="nav-logo">// project</div>
+    <div class="container">
+      <div class="nav-logo">// projects</div>
       <ul class="nav-links">
-        <li><a href="index.html">About</a></li>
-        <li><a href="projects.html">Projects</a></li>
       </ul>
-      <a href="projects.html" class="nav-back"><i class="ti ti-arrow-left"></i> All projects</a>
     </div>
   </nav>
 
@@ -145,7 +143,7 @@
         </div>
         <div class="proj-info-item">
           <span class="proj-info-label">Platform</span>
-          <span class="proj-info-value">T-Pot CE (Community Edition)</span>
+          <span class="proj-info-value">T-Pot</span>
         </div>
         <div class="proj-info-item">
           <span class="proj-info-label">Repo</span>
@@ -177,7 +175,7 @@
       <div class="section">
         <div class="section-title"><i class="ti ti-list-check"></i>Objectives</div>
         <ul>
-          <li>Deploy and configure T-Pot CE on a Linux host exposed to the internet</li>
+          <li>Deploy and configure T-Pot on a Linux host exposed to the internet</li>
           <li>Collect live attack telemetry from real-world threat actors</li>
           <li>Analyze attacker TTPs, source IPs, payloads, and credentials attempted</li>
           <li>Build familiarity with threat intelligence collection and log analysis</li>
@@ -189,9 +187,9 @@
         <div class="section-title"><i class="ti ti-tool"></i>Tools &amp; Environment</div>
         <p>T-Pot was deployed across two Azure cloud virtual machines in a Hive-Sensor architecture — separating the management and visualization layer from the honeypot sensor layer for better isolation and scalability.</p>
         <ul>
-          <li><strong>T-Pot CE</strong> — multi-honeypot platform (Docker-based)</li>
+          <li><strong>T-Pot </strong> — multi-honeypot platform (Docker-based)</li>
           <li><strong>Microsoft Azure</strong> — cloud hosting for both VMs</li>
-          <li><strong>Linux</strong> — host OS for both the Hive and Sensor</li>
+          <li><strong>Linux / Ubuntu Server 26.04 LTS</strong> — host OS for both the Hive and Sensor</li>
           <li><strong>Docker / Docker Compose</strong> — container orchestration</li>
           <li><strong>Kibana</strong> — built-in visualization and log analysis dashboard</li>
           <li><strong>Elasticsearch</strong> — log storage and indexing backend</li>
