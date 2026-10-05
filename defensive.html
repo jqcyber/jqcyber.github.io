@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#09111a" />
+<meta name="description" content="Joseph Quintana: security analyst focused on alert triage, incident response, endpoint detection, and detection tuning." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Joseph Quintana | Defensive Security Portfolio" />
+<meta property="og:description" content="Alert triage, incident response, endpoint detection, detection engineering, and malware analysis projects." />
+<meta property="og:image" content="https://jqcyber.github.io/images/purple-custom-rule.png" />
+<meta property="og:url" content="https://jqcyber.github.io/defensive.html" />
+<meta name="twitter:card" content="summary_large_image" />
+<title>Joseph Quintana | Defensive Security Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #09111a; --surface: #0e1925; --surface2: #131f2e;
+  --border: #1c2d40; --border2: #243850;
+  --accent: #2ec4b6; --accent-dim: rgba(46,196,182,0.08); --accent-border: rgba(46,196,182,0.22);
+  --blue: #4a9eff; --blue-dim: rgba(74,158,255,0.07); --blue-border: rgba(74,158,255,0.18);
+  --red: #ff3b57; --red-dim: rgba(255,59,87,0.08); --red-border: rgba(255,59,87,0.2);
+  --amber: #f0a500;
+  --text: #c8dced; --text-dim: #6a8399; --text-mid: #8fadc7; --head: #e8f4ff;
+  --mono: 'JetBrains Mono', monospace; --sans: 'Inter', sans-serif;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(900px 420px at 85% -5%, rgba(46,196,182,0.07), transparent 60%), radial-gradient(700px 400px at 0% 30%, rgba(74,158,255,0.05), transparent 60%); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.container { max-width: 960px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--accent); color: #04120f; padding: 8px 14px; border-radius: 6px; font-size: 13px; z-index: 200; }
+.skip:focus { left: 8px; }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(9,17,26,0.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+nav .container { display: flex; align-items: center; gap: 1.5rem; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+.nav-logo { font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 0.05em; white-space: nowrap; }
+.nav-links { display: flex; gap: 1.4rem; list-style: none; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; white-space: nowrap; transition: color .2s, border-color .2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* HERO */
+.hero { padding: 5.5rem 0 3.5rem; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 3rem; align-items: center; }
+.eyebrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 8px; }
+.eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); }
+.hero-name { font-size: clamp(2.6rem, 6vw, 4rem); font-weight: 600; color: var(--head); line-height: 1.04; letter-spacing: -0.02em; margin-bottom: 0.9rem; }
+.hero-name span { color: var(--accent); }
+.hero-role { font-family: var(--mono); font-size: 12.5px; color: var(--blue); letter-spacing: 0.03em; margin-bottom: 1.4rem; line-height: 1.9; }
+.hero-bio { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 0; max-width: 560px; }
+.hero-bio strong { color: var(--text); font-weight: 500; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all .2s; }
+.btn-primary { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.btn-primary:hover { background: rgba(46,196,182,0.16); border-color: var(--accent); }
+.btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--border2); }
+.btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
+
+/* FEATURED PROJECT */
+.feature { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; text-decoration: none; box-shadow: 0 20px 50px -25px rgba(0,0,0,0.7); transition: border-color .2s, transform .2s; }
+.feature:hover { border-color: var(--accent-border); transform: translateY(-2px); }
+.feature img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top left; border-bottom: 1px solid var(--border); }
+.feature-body { padding: 1.1rem 1.25rem 1.25rem; }
+.feature-kicker { font-family: var(--mono); font-size: 10.5px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.feature-title { font-size: 16px; font-weight: 600; color: var(--head); margin-bottom: 6px; }
+.feature p { font-size: 13px; color: var(--text-mid); line-height: 1.65; margin-bottom: 0.9rem; }
+.feature-go { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--accent); }
+
+/* METRICS */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); margin-bottom: 4rem; }
+.metric { padding: 1.4rem 1rem; text-align: center; border-right: 1px solid var(--border); }
+.metric:last-child { border-right: none; }
+.metric-num { font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--head); margin-bottom: 4px; letter-spacing: -0.02em; }
+.metric-num span { color: var(--accent); }
+.metric-lbl { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+
+/* SECTIONS */
+section { margin-bottom: 4.5rem; }
+.section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.6rem; }
+.section-label { font-weight: 400; font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-lede { font-size: 14.5px; color: var(--text-mid); max-width: 640px; margin: -0.6rem 0 1.5rem; line-height: 1.75; }
+
+/* CAPABILITIES */
+.cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.cap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: border-color .2s, transform .2s; }
+.cap:hover { border-color: var(--accent-border); transform: translateY(-2px); }
+.cap-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-border); margin-bottom: 0.9rem; }
+.cap h3 { font-size: 14px; font-weight: 600; color: var(--head); margin-bottom: 0.4rem; }
+.cap p { font-size: 13px; color: var(--text-mid); line-height: 1.65; }
+
+/* EXPERIENCE */
+.role { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.role-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.role-title { font-size: 16px; font-weight: 600; color: var(--head); }
+.role-co { font-size: 13px; color: var(--text-mid); margin-top: 2px; }
+.role-date { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; padding: 4px 10px; align-self: flex-start; }
+.role ul { list-style: none; }
+.role li { position: relative; padding-left: 1.4rem; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin-bottom: 0.7rem; }
+.role li:last-child { margin-bottom: 0; }
+.role li::before { content: ""; position: absolute; left: 2px; top: 0.7em; width: 6px; height: 6px; border-radius: 1px; background: var(--accent); }
+.role li strong { color: var(--text); font-weight: 500; }
+
+/* SKILLS */
+.tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.tech-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.tech-head { display: flex; align-items: center; gap: 8px; padding: 0.75rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--text); }
+.tech-head i { color: var(--accent); font-size: 16px; }
+.tech-body { padding: 0.9rem 1rem; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; color: var(--text-mid); background: var(--bg); border: 1px solid var(--border2); }
+.chip.hot { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-border); }
+
+/* CERTS + EDU */
+.cert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.cert { display: flex; flex-direction: column; gap: 3px; padding: 0.9rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+.cert.hot { border-color: var(--accent-border); background: linear-gradient(180deg, var(--accent-dim), var(--surface)); }
+.cert-badge { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+.cert-name { font-size: 14px; font-weight: 600; color: var(--head); }
+.edu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+.edu { padding: 1.1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.edu b { display: block; font-family: var(--mono); font-size: 18px; color: var(--accent); margin-bottom: 4px; }
+.edu span { font-size: 13px; color: var(--text-mid); }
+
+/* PROJECTS */
+.proj { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; margin-bottom: 1rem; transition: background .15s, border-color .15s, transform .15s; }
+.proj:hover { background: var(--surface2); border-color: var(--accent-border); transform: translateX(2px); }
+.proj-icon { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.proj-main { flex: 1; min-width: 0; }
+.proj-name { font-size: 14px; font-weight: 600; color: var(--head); margin-bottom: 3px; }
+.proj-desc { font-size: 12.5px; color: var(--text-mid); line-height: 1.55; }
+.proj-tags { display: flex; gap: 8px; flex-shrink: 0; }
+.pill { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border-radius: 4px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); }
+.pill.ok { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-border); }
+.proj-arrow { color: var(--text-dim); font-size: 16px; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; }
+footer .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.footer-left { font-size: 13px; color: var(--text-dim); }
+.footer-links { display: flex; gap: 10px; }
+
+/* MOTION */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cap, .proj, .feature { transition: none; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 3.5rem; }
+  .cap-grid { grid-template-columns: repeat(2, 1fr); }
+  .cert-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .container { padding: 0 1.25rem; }
+  nav .container { flex-wrap: wrap; gap: 0.6rem; }
+  .nav-logo { order: 1; }
+    .nav-links { order: 3; width: 100%; margin-left: 0; gap: 1.2rem; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .metric:nth-child(2) { border-right: none; }
+  .metric:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+  .cap-grid, .tech-grid, .edu-grid { grid-template-columns: 1fr; }
+  .proj { flex-wrap: wrap; }
+  .proj-tags { order: 3; }
+  .proj-arrow { display: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav>
+  <div class="container">
+    <div class="nav-logo">// portfolio</div>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#capabilities">Capabilities</a></li>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#certs">Certs</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main" class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Defensive Security</div>
+      <h1 class="hero-name">Joseph<br><span>Quintana</span></h1>
+      <div class="hero-role">Alert Triage &nbsp;·&nbsp; Incident Response &nbsp;·&nbsp; Endpoint Detection &nbsp;·&nbsp; Detection Tuning</div>
+      <p class="hero-bio">
+        Security analyst with <strong>3 years of hands-on experience</strong> in SIEM alert triage, incident response, and endpoint detection across a multi-client environment of <strong>1,000+ endpoints</strong>. Investigates identity and email threats, writes custom detection rules, and tunes noisy alerts so analysts spend their time on real threats.
+      </p>
+    </div>
+
+    <a class="feature" href="project-purple-team.html" aria-label="Featured project: Adversary Emulation &amp; XDR Detection Engineering">
+      <img src="images/purple-custom-rule.png" alt="Sophos XDR custom detection rule for MyComputer BackupPath registry persistence, mapped to T1112 at High severity" loading="eager" />
+      <div class="feature-body">
+        <div class="feature-kicker">Featured project</div>
+        <div class="feature-title">Adversary Emulation &amp; XDR Detection Engineering</div>
+        <p>Ran Atomic Red Team against Sophos XDR, found a registry persistence technique the default configuration missed, and wrote a custom rule to catch it.</p>
+        <span class="feature-go">Read the write-up <i class="ti ti-arrow-right" aria-hidden="true"></i></span>
+      </div>
+    </a>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric"><div class="metric-num"><span>70</span>%</div><div class="metric-lbl">Fewer false-positive alerts after a tuning rule</div></div>
+    <div class="metric"><div class="metric-num">700<span>+</span></div><div class="metric-lbl">Endpoints deployed with EDR</div></div>
+    <div class="metric"><div class="metric-num">1,000<span>+</span></div><div class="metric-lbl">Endpoints remediated through patch deployment</div></div>
+    <div class="metric"><div class="metric-num">9<span>x</span></div><div class="metric-lbl">Industry certifications</div></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-header"><h2 class="section-label">Projects</h2><div class="section-line"></div></div>
+    <a class="proj" href="project-purple-team.html">
+      <div class="proj-icon"><i class="ti ti-shield-search" aria-hidden="true"></i></div>
+      <div class="proj-main">
+        <div class="proj-name">Adversary Emulation &amp; XDR Detection Engineering</div>
+        <div class="proj-desc">Ran Atomic Red Team against Sophos XDR, found a missed registry persistence technique, and wrote a custom rule to catch it.</div>
+      </div>
+      <div class="proj-tags"><span class="pill">Home Lab</span><span class="pill ok">Completed</span></div>
+      <i class="ti ti-arrow-right proj-arrow" aria-hidden="true"></i>
+    </a>
+    <a class="proj" href="project-malware-analysis.html">
+      <div class="proj-icon"><i class="ti ti-virus" aria-hidden="true"></i></div>
+      <div class="proj-main">
+        <div class="proj-name">Malware Analysis Lab</div>
+        <div class="proj-desc">Built an isolated FlareVM lab and dynamically analyzed a RAT to uncover its Startup-folder persistence.</div>
+      </div>
+      <div class="proj-tags"><span class="pill">Home Lab</span><span class="pill ok">Completed</span></div>
+      <i class="ti ti-arrow-right proj-arrow" aria-hidden="true"></i>
+    </a>
+    <a class="proj" href="project-tpot.html">
+      <div class="proj-icon"><i class="ti ti-bug" aria-hidden="true"></i></div>
+      <div class="proj-main">
+        <div class="proj-name">T-Pot Honeypot &amp; Threat Intelligence Collection</div>
+        <div class="proj-desc">Deployed T-Pot to lure real-world threat actors and collect live attack telemetry, TTPs, and IOCs.</div>
+      </div>
+      <div class="proj-tags"><span class="pill">Home Lab</span><span class="pill ok">Completed</span></div>
+      <i class="ti ti-arrow-right proj-arrow" aria-hidden="true"></i>
+    </a>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section id="capabilities">
+    <div class="section-header"><h2 class="section-label">Capabilities</h2><div class="section-line"></div></div>
+    <div class="cap-grid">
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-radar-2" aria-hidden="true"></i></div>
+        <h3>Alert Triage</h3>
+        <p>Investigates SIEM alerts for identity and email threats, including impossible travel, phishing, spoofing, and malicious mailbox rules, and contains account compromise.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-adjustments-alt" aria-hidden="true"></i></div>
+        <h3>Detection Engineering</h3>
+        <p>Onboards new log sources and writes custom rules, including a mass file-activity alert for ransomware and data exfiltration, then tunes noise out of existing detections.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-device-laptop" aria-hidden="true"></i></div>
+        <h3>Endpoint Detection</h3>
+        <p>Deployed Datto EDR across 700+ endpoints and investigates detections to uncover persistence, such as malware dropped through Autorun registry keys.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-mail-opened" aria-hidden="true"></i></div>
+        <h3>Email Security</h3>
+        <p>Analyzes suspicious emails, headers, URLs, and attachments with Inky, Microsoft Defender, VirusTotal, and Any.Run, and hardens domains with SPF and phishing simulations.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-id-badge-2" aria-hidden="true"></i></div>
+        <h3>Identity &amp; Access</h3>
+        <p>Enforces Conditional Access in Entra ID, integrates apps through SAML single sign-on, and automates least-privilege onboarding with Power Automate.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <h3>Vulnerability &amp; Policy</h3>
+        <p>Remediates scanner findings across 1,000+ endpoints through patch deployment and co-developed a NIST CSF 2.0-aligned security policy framework for client onboarding.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section id="tools">
+    <div class="section-header"><h2 class="section-label">Tools &amp; Technology</h2><div class="section-line"></div></div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-head"><i class="ti ti-radar-2" aria-hidden="true"></i>Detection &amp; Response</div>
+        <div class="tech-body">
+          <span class="chip hot">KSIEM</span><span class="chip hot">Datto EDR</span><span class="chip hot">Microsoft Defender</span><span class="chip">Windows Event Logs</span><span class="chip">Wireshark</span><span class="chip">IOC enrichment</span><span class="chip">Log analysis</span>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-head"><i class="ti ti-mail-opened" aria-hidden="true"></i>Email &amp; Threat Analysis</div>
+        <div class="tech-body">
+          <span class="chip hot">Inky</span><span class="chip hot">VirusTotal</span><span class="chip hot">Any.Run</span><span class="chip">BullPhish ID</span><span class="chip">DarkWeb ID</span><span class="chip">SPF</span><span class="chip">Header analysis</span>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-head"><i class="ti ti-id-badge-2" aria-hidden="true"></i>Identity &amp; Endpoint</div>
+        <div class="tech-body">
+          <span class="chip">Entra ID</span><span class="chip">Active Directory</span><span class="chip">Conditional Access</span><span class="chip">MS Intune</span><span class="chip">Power Automate</span><span class="chip">Kaseya VSA X</span><span class="chip">VulScan</span><span class="chip">Azure</span>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-head"><i class="ti ti-terminal-2" aria-hidden="true"></i>Scripting, Network &amp; Frameworks</div>
+        <div class="tech-body">
+          <span class="chip">Python</span><span class="chip">PowerShell</span><span class="chip">Bash</span><span class="chip">SQL</span><span class="chip">Firewalls</span><span class="chip">VLANs</span><span class="chip">pfSense</span><span class="chip">NIST CSF 2.0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTS + EDUCATION -->
+  <section id="certs">
+    <div class="section-header"><h2 class="section-label">Certifications &amp; Education</h2><div class="section-line"></div></div>
+    <div class="cert-grid">
+      <div class="cert hot"><span class="cert-badge">CompTIA</span><span class="cert-name">CySA+</span></div>
+      <div class="cert hot"><span class="cert-badge">CompTIA</span><span class="cert-name">Security+</span></div>
+      <div class="cert hot"><span class="cert-badge">CompTIA</span><span class="cert-name">PenTest+</span></div>
+      <div class="cert"><span class="cert-badge">Cisco</span><span class="cert-name">CCNA</span></div>
+      <div class="cert"><span class="cert-badge">CompTIA</span><span class="cert-name">A+</span></div>
+      <div class="cert"><span class="cert-badge">CompTIA</span><span class="cert-name">Project+</span></div>
+      <div class="cert"><span class="cert-badge">LPI</span><span class="cert-name">Linux Essentials</span></div>
+      <div class="cert"><span class="cert-badge">LanguageCert</span><span class="cert-name">ITIL 4 Foundation</span></div>
+      <div class="cert"><span class="cert-badge">Kaseya</span><span class="cert-name">VSA X Administrator</span></div>
+    </div>
+    <div class="edu-grid">
+      <div class="edu"><b>M.S.</b><span>Cybersecurity &amp; Information Assurance</span></div>
+      <div class="edu"><b>B.S.</b><span>Cybersecurity &amp; Information Assurance</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-left">© 2026 Joseph Quintana</div>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/joseph-q-630610245" class="btn btn-primary" target="_blank" rel="noopener"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
+      <a href="https://github.com/jqcyber" class="btn btn-secondary" target="_blank" rel="noopener"><i class="ti ti-brand-github"></i>GitHub</a>
+      <a href="mailto:jqui247@wgu.edu" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  if (!('IntersectionObserver' in window)) { return; }
+  var links = document.querySelectorAll('.nav-links a');
+  var map = {}; links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting && map[e.target.id]) {
+        links.forEach(function (a) { a.classList.remove('active'); });
+        map[e.target.id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) spy.observe(s); });
+  window.addEventListener('scroll', function () {
+    if (window.scrollY < 240) links.forEach(function (a) { a.classList.remove('active'); });
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
