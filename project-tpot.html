@@ -4,120 +4,156 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Joseph Quintana | T-Pot Honeypot</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<meta name="theme-color" content="#B0001A" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
---bg: #09111a; --surface: #0e1925; --surface2: #131f2e;
---border: #1c2d40; --border2: #243850;
---accent: #ff3b57; --accent-dim: rgba(255,59,87,0.08); --accent-border: rgba(255,59,87,0.18);
---blue: #4a9eff; --blue-dim: rgba(74,158,255,0.07); --blue-border: rgba(74,158,255,0.16);
---text: #c8dced; --text-dim: #4e6880; --text-mid: #7a9ab8;
---mono: 'JetBrains Mono', monospace; --sans: 'Inter', sans-serif;
+  --crimson: #B0001A; --crimson-deep: #7D0012;
+  --char: #150608; --soot: #240B0F; --line: #4A1820;
+  --ember: #FF4558; --bone: #FFF1EF; --ash: #D6B3B7; --blush: #FFD3D8; --term: #0C0304;
+  --sans: 'Archivo', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme: dark;
 }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-.container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
-.container-wide { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--char); color: var(--bone); font-family: var(--sans); font-size: 1.0625rem; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+a { color: var(--ember); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--bone); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 480px) { .wrap { padding: 0 16px; } }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--bone); color: var(--crimson); padding: 8px 14px; z-index: 200; font-weight: 700; }
+.skip:focus { left: 8px; }
+
+/* Crimson band with a worn hatch, shared with the portfolio page */
+.crimson { background: var(--soot); border-bottom: 3px solid var(--crimson); color: var(--bone); }
+.crimson a { color: var(--ember); }
+
 /* NAV */
-nav { position: sticky; top: 0; z-index: 100; background: rgba(7,11,16,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
-nav .container { display: flex; align-items: center; justify-content: space-between; }
-.nav-logo { font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 0.05em; }
-.nav-links { display: flex; gap: 1.5rem; list-style: none; }
-.nav-links a { font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.01em; transition: color 0.2s; }
-.nav-links a:hover { color: var(--accent); }
-.nav-back { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
-.nav-back:hover { color: var(--accent); }
-/* PROJECT HEADER — exact mirror of portfolio hero */
-.proj-header { padding: 6rem 0 4rem; }
-.proj-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.25rem; }
-.proj-title { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 600; color: #e8f4ff; line-height: 1.1; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
-.proj-role { font-family: var(--mono); font-size: 13px; color: var(--blue); margin-bottom: 1.75rem; letter-spacing: 0.03em; }
-.proj-summary { font-size: 15px; color: var(--text-mid); line-height: 1.8; max-width: 600px; margin-bottom: 2rem; }
-.proj-summary strong { color: var(--text); }
-.proj-info-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-.proj-info-item { display: flex; flex-direction: column; gap: 4px; }
-.proj-info-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
-.proj-info-value { font-size: 13px; color: var(--text); font-weight: 500; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-family: var(--mono); font-size: 11px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; }
-.header-divider { height: 1px; background: var(--border); margin-bottom: 3rem; }
-/* CONTENT */
-.proj-content { padding-bottom: 5rem; }
-.section { margin-bottom: 2.5rem; }
-.section-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
-.section-title i { font-size: 16px; color: var(--accent); }
-p { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 1rem; }
-p:last-child { margin-bottom: 0; }
-ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
-li { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 0.25rem; }
-strong { color: var(--text); font-weight: 600; }
-/* CODE BLOCK */
-.code-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 1.25rem 0; }
-.code-block-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface2); }
-.code-block-label { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
-.code-block pre { padding: 1rem; overflow-x: auto; }
-.code-block code { font-family: var(--mono); font-size: 12px; color: var(--text); line-height: 1.7; white-space: pre; }
-/* CALLOUT */
-.callout { display: flex; gap: 12px; padding: 1rem 1.25rem; border-radius: 8px; margin: 1.25rem 0; }
-.callout-info { background: var(--blue-dim); border: 1px solid var(--blue-border); }
-.callout-warn { background: rgba(240,165,0,0.07); border: 1px solid rgba(240,165,0,0.2); }
-.callout-success { background: var(--accent-dim); border: 1px solid var(--accent-border); }
-.callout i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-.callout-info i { color: var(--blue); }
-.callout-warn i { color: #f0a500; }
-.callout-success i { color: var(--accent); }
-.callout p { font-size: 13px; margin-bottom: 0; }
-/* STAT STRIP */
-.stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.5rem 0; background: var(--surface); }
-.strip-stat { padding: 1.25rem; border-right: 1px solid var(--border); text-align: center; }
-.strip-stat:last-child { border-right: none; }
-.strip-num { font-family: var(--mono); font-size: 22px; font-weight: 700; color: #e8f4ff; margin-bottom: 4px; }
-.strip-lbl { font-size: 11px; color: var(--text-dim); }
-/* IMG PLACEHOLDER */
-.img-placeholder { background: var(--surface); border: 1px dashed var(--border2); border-radius: 8px; padding: 3rem 2rem; text-align: center; margin: 1.25rem 0; color: var(--text-dim); font-size: 13px; }
-.img-placeholder i { font-size: 28px; display: block; margin-bottom: 8px; }
-/* BACK NAV */
-.proj-nav { margin: 4rem 0 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-.proj-nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; font-size: 13px; color: var(--text-mid); transition: all 0.15s; }
-.proj-nav-btn:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
-/* FOOTER */
-footer { border-top: 1px solid var(--border); padding: 2rem 0; }
-footer .container-wide { display: flex; align-items: center; justify-content: space-between; }
-.footer-left { font-size: 13px; color: var(--text-dim); }
-.footer-links { display: flex; gap: 10px; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; }
-.btn-primary { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
-.btn-primary:hover { background: rgba(255,59,87,0.15); border-color: var(--accent); }
-.btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--border2); }
-.btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
-@media (max-width: 640px) {
-.stat-strip { grid-template-columns: 1fr; }
-.strip-stat { border-right: none; border-bottom: 1px solid var(--border); }
-.strip-stat:last-child { border-bottom: none; }
-.proj-info-row { gap: 1.25rem; }
-nav .nav-links { display: none; }
+.top { position: sticky; top: 0; z-index: 50; background: var(--crimson-deep); border-bottom: 3px solid var(--ember); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-stretch: 112%; color: var(--bone); text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
+.brand svg { width: 22px; height: 22px; }
+.back { color: var(--blush); text-decoration: none; font-size: 0.9375rem; font-weight: 600; padding: 4px 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+.back:hover { color: #fff; border-bottom-color: var(--bone); }
+
+/* HEADER BAND */
+.proj-header, .post-header { padding: 56px 0 40px; }
+.proj-title, .post-title { font-weight: 800; font-stretch: 104%; font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.1; letter-spacing: -0.02em; max-width: 24ch; }
+.proj-title { margin-bottom: 16px; }
+.post-header-row { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+.post-logo { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; object-fit: cover; border: 1px solid var(--line); background: var(--char); }
+.proj-summary { font-size: 1.125rem; line-height: 1.65; color: var(--ash); max-width: 64ch; margin-bottom: 28px; }
+.proj-summary strong { color: var(--bone); }
+.proj-info-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+.post-header .proj-info-row { margin-bottom: 0; }
+.proj-info-item { display: flex; flex-direction: column; gap: 2px; padding: 12px 20px 13px 0; }
+.proj-info-label { font-size: 0.875rem; color: var(--ash); }
+.proj-info-value { font-size: 1rem; font-weight: 600; color: var(--bone); }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 0.8125rem; font-weight: 500; color: var(--ash); border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; }
+@media (max-width: 760px) { .proj-header, .post-header { padding: 36px 0 32px; } }
+
+/* ARTICLE */
+.proj-content, .content { max-width: 720px; padding: 56px 0 24px; }
+.section { margin-bottom: 72px; }
+.section-title, .content h2 { font-weight: 800; font-stretch: 102%; font-size: clamp(1.5rem, 2.6vw, 1.875rem); letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 16px; }
+.section-title::before, .content h2::before { content: ""; display: block; width: 36px; height: 3px; background: var(--ember); border-radius: 2px; margin-bottom: 14px; }
+.content h2 { margin-top: 64px; }
+.content h2:first-child { margin-top: 0; }
+h3.step { font-weight: 700; font-stretch: 100%; font-size: 1.1875rem; letter-spacing: -0.015em; line-height: 1.3; margin: 40px 0 10px; }
+.proj-content p, .content p { color: var(--ash); margin-bottom: 1rem; }
+.proj-content p:last-child { margin-bottom: 0; }
+.proj-content strong, .content strong { color: #fff; font-weight: 700; }
+.proj-content ul, .content ul { padding-left: 1.25rem; margin-bottom: 1rem; color: var(--ash); }
+.proj-content li, .content li { margin-bottom: 0.5rem; padding-left: 4px; }
+.proj-content li::marker, .content ul li::marker { color: var(--ember); }
+code { font-family: var(--mono); font-size: 0.875em; color: var(--blush); background: var(--soot); border: 1px solid var(--line); border-radius: 2px; padding: 1px 5px; overflow-wrap: anywhere; }
+.proj-content img, .content img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; margin: 28px 0 14px; }
+.post-header .post-logo { margin: 0; width: 64px; }
+.shot-cap { font-size: 0.9375rem; color: var(--ash); margin: 0 0 24px; }
+
+/* CODE */
+.content pre, .code-block { background: var(--term); border: 1px solid var(--line); border-radius: 8px; margin: 24px 0; }
+.content pre { padding: 16px; overflow-x: auto; }
+.code-block { overflow: hidden; }
+.code-block-header { padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--soot); }
+.code-block-label { font-family: var(--mono); font-size: 0.8125rem; color: var(--ash); }
+.code-block pre { padding: 16px; overflow-x: auto; }
+pre code, .code-block code { background: none; border: 0; padding: 0; color: var(--bone); font-size: 0.875rem; line-height: 1.7; white-space: pre; overflow-wrap: normal; }
+
+/* COLLAPSIBLE CODE: first lines show, the toggle reveals the rest */
+.code-clamp { margin: 24px 0; }
+.code-clamp .code-toggle-checkbox { position: absolute; opacity: 0; pointer-events: none; }
+.code-clamp .code-scroll { background: var(--term); border: 1px solid var(--line); border-bottom: none; border-radius: 8px 8px 0 0; overflow-x: auto; padding: 16px; }
+.code-clamp .code-scroll pre { margin: 0; padding: 0; border: none; border-radius: 0; background: none; overflow: visible; width: max-content; min-width: 100%; }
+.code-clamp .code-scroll pre.code-rest { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .code-scroll pre.code-rest { display: block; }
+.code-clamp .toggle-line { display: flex; align-items: center; gap: 8px; padding: 9px 16px; background: var(--soot); border: 1px solid var(--line); border-radius: 0 0 8px 8px; font: 500 0.8125rem/1.2 var(--sans); color: var(--ash); cursor: pointer; user-select: none; }
+.code-clamp .toggle-line:hover { color: #fff; background: #2E0E14; }
+.code-clamp .code-toggle-checkbox:focus-visible ~ .toggle-line { outline: 3px solid var(--bone); outline-offset: 2px; }
+.code-clamp .chevron { color: var(--ember); transition: transform 0.15s; flex-shrink: 0; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .chevron { transform: rotate(90deg); }
+.code-clamp .label-less { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .label-more { display: none; }
+.code-clamp .code-toggle-checkbox:checked ~ .toggle-line .label-less { display: inline; }
+@media (prefers-reduced-motion: reduce) { .code-clamp .chevron { transition: none; } }
+
+/* ATTACK CHAIN LIST: numbered nodes on a red line */
+.content ol { list-style: none; counter-reset: hop; margin: 24px 0 28px; padding: 0; }
+.content ol li { counter-increment: hop; position: relative; padding: 2px 0 22px 48px; color: var(--ash); }
+.content ol li::before { content: counter(hop); position: absolute; left: 0; top: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--ember); border-radius: 50%; background: var(--char); color: var(--ember); font-size: 0.875rem; font-weight: 700; z-index: 1; }
+.content ol li::after { content: ""; position: absolute; left: 15px; top: 30px; bottom: 0; width: 1px; background: var(--line); }
+.content ol li:last-child { padding-bottom: 0; }
+.content ol li:last-child::before { background: var(--ember); color: var(--char); }
+.content ol li:last-child::after { display: none; }
+
+/* CALLOUTS */
+.callout { padding: 16px 20px; border-radius: 8px; margin: 24px 0; border: 1px solid var(--line); border-left: 3px solid; background: var(--soot); }
+.callout p { margin: 0; }
+.callout-info { border-color: var(--blush); }
+.callout-warn { border-color: var(--ember); }
+.callout-warn strong { color: var(--ember); }
+.callout-success { border-color: var(--bone); }
+
+/* RESULTS STRIP */
+.stat-strip { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 28px 0; }
+.strip-stat { padding: 18px 20px 20px 0; }
+.strip-stat + .strip-stat { padding-left: 20px; border-left: 1px solid var(--line); }
+.strip-num { font-weight: 800; font-stretch: 102%; font-size: clamp(1.375rem, 3vw, 1.875rem); letter-spacing: -0.03em; line-height: 1.05; color: var(--ember); overflow-wrap: anywhere; }
+.strip-lbl { font-size: 0.9375rem; color: var(--ash); margin-top: 6px; line-height: 1.4; }
+@media (max-width: 560px) {
+  .stat-strip { grid-template-columns: 1fr; }
+  .strip-stat + .strip-stat { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
 }
+
+/* BACK LINK */
+.proj-nav, .post-nav { max-width: 760px; margin-top: 40px; padding: 24px 0 88px; border-top: 1px solid var(--line); }
+.proj-nav a, .post-nav a { font-weight: 600; }
 </style>
 </head>
 <body>
 
-<nav>
-<div class="container">
-<div class="nav-logo">// projects</div>
-<ul class="nav-links">
-</ul>
-<a href="index.html" class="nav-back"><i class="ti ti-arrow-left"></i>Go back to portfolio</a>
-</div>
-</nav>
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="container">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#FFF1EF" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/></svg>
+      Joseph Quintana
+    </a>
+    <a class="back" href="index.html#projects">Back to portfolio</a>
+  </div>
+</header>
+
+<main id="main">
+<div class="crimson"><div class="wrap">
 <div class="proj-header">
-<div class="proj-eyebrow">Home Lab · Completed</div>
 <h1 class="proj-title">T-Pot Honeypot</h1>
-<div class="proj-role">Threat Intelligence Collection &nbsp;·&nbsp; Azure &nbsp;·&nbsp; Docker &nbsp;·&nbsp; Kibana</div>
-<p class="proj-summary">Deployed T-Pot, a multi-honeypot platform, on Azure to attract real attackers and record their source IPs, credentials, payloads, and techniques.</p>
+<p class="proj-summary">I deployed T-Pot, a multi-honeypot platform, on Azure to attract real attackers and record their source IPs, credentials, payloads, and techniques.</p>
 
 <div class="proj-info-row">
 <div class="proj-info-item">
@@ -134,7 +170,7 @@ nav .nav-links { display: none; }
 </div>
 <div class="proj-info-item">
 <span class="proj-info-label">Repo</span>
-<span class="proj-info-value"><a href="https://github.com/telekom-security/tpotce" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub ↗</a></span>
+<span class="proj-info-value"><a href="https://github.com/telekom-security/tpotce" target="_blank">GitHub ↗</a></span>
 </div>
 </div>
 
@@ -151,16 +187,18 @@ nav .nav-links { display: none; }
 </div>
 </div>
 
+</div></div>
+<div class="wrap">
 <div class="proj-content">
 
 <div class="section">
-<div class="section-title"><i class="ti ti-info-circle"></i>Overview</div>
+<h2 class="section-title">Overview</h2>
 <p>T-Pot is an all-in-one honeypot platform from Deutsche Telekom Security. It bundles over 20 honeypot daemons, including Cowrie, Dionaea, and Honeytrap, into a single Docker-based deployment that exposes many fake services for attackers to hit.</p>
 <p>I deployed T-Pot in a controlled environment, exposed it to the internet, and collected real attack data, including brute-force attempts, credential stuffing, malware drops, and exploitation attempts.</p>
 </div>
 
 <div class="section">
-<div class="section-title"><i class="ti ti-list-check"></i>Objectives</div>
+<h2 class="section-title">Objectives</h2>
 <ul>
 <li>Deploy and configure T-Pot on a Linux host exposed to the internet</li>
 <li>Collect live attack telemetry from real-world threat actors</li>
@@ -171,7 +209,7 @@ nav .nav-links { display: none; }
 </div>
 
 <div class="section">
-<div class="section-title"><i class="ti ti-tool"></i>Tools &amp; Environment</div>
+<h2 class="section-title">Tools &amp; Environment</h2>
 <p>I deployed T-Pot across two Azure virtual machines in a Hive/Sensor architecture. The Hive handles management and visualization, and the Sensor runs the honeypots. Splitting the roles keeps the logs and dashboards off the machine attackers can reach.</p>
 <ul>
 <li><strong>T-Pot</strong>: multi-honeypot platform (Docker-based)</li>
@@ -186,15 +224,15 @@ nav .nav-links { display: none; }
 </div>
 
 <div class="section">
-<div class="section-title"><i class="ti ti-route"></i>Deployment Process</div>
+<h2 class="section-title">Deployment Process</h2>
 <div class="callout callout-warn">
-<i class="ti ti-alert-triangle"></i>
+
 <p><strong>Important:</strong> T-Pot is exposed to the internet on purpose. Deploy it on a dedicated, isolated host, never on a machine with access to sensitive data or production networks. A honeypot can itself be compromised, and running one on a home network draws malicious traffic toward everything else on that network. Use a cloud VM.</p>
 </div>
 <p>T-Pot uses a distributed Hive/Sensor architecture. The <strong>Hive</strong> is the central management and visualization node, running Elasticsearch, Kibana, Logstash, and the web UI. The <strong>Sensor</strong> runs the honeypot daemons and ships all captured log data back to the Hive over an encrypted SSH tunnel.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 1: Provision Azure VMs</p>
+<h3 class="step">Step 1: Provision Azure VMs</h3>
 <p>I provisioned two Azure VMs, the Hive (16 GB RAM, 256 GB SSD) and the Sensor (8 GB RAM, 128 GB SSD), each on a clean Linux install. Both sat on public subnets with no inbound firewall rules blocking honeypot ports, so attacker traffic could reach the Sensor. I restricted management access to a non-default SSH port.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 2: Install T-Pot on the Hive</p>
+<h3 class="step">Step 2: Install T-Pot on the Hive</h3>
 <p>On the Hive VM, I ran the T-Pot installer as a non-root user and chose <strong>H (Hive)</strong> at the installation-type prompt. That option installs the full Elastic Stack, an NGINX reverse proxy, the Kibana dashboards, the GeoIP Attack Map, and the management tools.</p>
 <div class="code-block">
 <div class="code-block-header">
@@ -207,8 +245,8 @@ env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/in
 # Set a WEB_USER and password for the T-Pot WebUI (BasicAuth)
 # Installer will configure Docker, Logstash, Kibana, NGINX, and reboot</code></pre>
 </div>
-<p>When the installer finishes, the Hive reboots. T-Pot moves the system SSH port to <strong>64295</strong> so Cowrie can listen on port 22. After the reboot, the Kibana dashboard and Attack Map are at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code>.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 3: Install T-Pot on the Sensor</p>
+<p>When the installer finishes, the Hive reboots. T-Pot moves the system SSH port to <strong>64295</strong> so Cowrie can listen on port 22. After the reboot, the Kibana dashboard and Attack Map are at <code>https://&lt;hive-ip&gt;:64297</code>.</p>
+<h3 class="step">Step 3: Install T-Pot on the Sensor</h3>
 <p>On the Sensor VM, I ran the same installer and chose <strong>S (Sensor)</strong>. The Sensor gets only the honeypot daemons and the Logstash forwarder, with no Kibana or Elastic Stack. It stays inactive until it is linked to the Hive in the next step.</p>
 <div class="code-block">
 <div class="code-block-header">
@@ -220,8 +258,8 @@ env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/in
 # Select S for Sensor when prompted
 # Reboot once installation completes</code></pre>
 </div>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 4: Connect the Sensor to the Hive</p>
-<p>Once both VMs are up, the Sensor needs a link to the Hive to forward its logs. Running <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">deploy.sh</code> on the Hive generates SSH keys and sets up an encrypted Logstash tunnel between the two nodes.</p>
+<h3 class="step">Step 4: Connect the Sensor to the Hive</h3>
+<p>Once both VMs are up, the Sensor needs a link to the Hive to forward its logs. Running <code>deploy.sh</code> on the Hive generates SSH keys and sets up an encrypted Logstash tunnel between the two nodes.</p>
 <div class="code-block">
 <div class="code-block-header">
 <span class="code-block-label">bash: linking Sensor to Hive</span>
@@ -237,12 +275,12 @@ cd ~/tpotce
 dps.sh</code></pre>
 </div>
 <p>After linking, the Sensor sends honeypot events to the Hive's Elasticsearch over an SSH tunnel on port 64295. The Hive account created for this connection can only forward logs and cannot open an interactive shell.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 5: Verify and monitor</p>
-<p>With both nodes running, honeypot data reaches Kibana in real time. The T-Pot landing page at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code> links to the Kibana dashboard, GeoIP Attack Map, CyberChef, Elasticvue, and SpiderFoot, all preconfigured.</p>
+<h3 class="step">Step 5: Verify and monitor</h3>
+<p>With both nodes running, honeypot data reaches Kibana in real time. The T-Pot landing page at <code>https://&lt;hive-ip&gt;:64297</code> links to the Kibana dashboard, GeoIP Attack Map, CyberChef, Elasticvue, and SpiderFoot, all preconfigured.</p>
 </div>
 
 <div class="section">
-<div class="section-title"><i class="ti ti-chart-bar"></i>Results &amp; Findings</div>
+<h2 class="section-title">Results &amp; Findings</h2>
 <p>Attacks started shortly after the honeypot went live. In the first 24 hours it logged over <strong>5,000 attacks</strong>, and most of them hit <strong>Cowrie</strong>, the SSH honeypot.</p>
 <div class="stat-strip">
 <div class="strip-stat">
@@ -260,19 +298,19 @@ dps.sh</code></pre>
 </div>
 <p>In the SSH brute-force data, the most common username was <strong>root</strong> and the most common password was <strong>123456</strong>. Attackers led with default and weak credentials.</p>
 <div class="callout callout-warn">
-<i class="ti ti-alert-triangle"></i>
+
 <p><strong>Notable:</strong> 99% of source IPs were already flagged as malicious in threat intelligence databases, which suggests most of this traffic comes from known botnets and repeat scanners.</p>
 </div>
 <p>The Kibana dashboard breaks the telemetry down by origin country, targeted port, attacker IP, and attempted credentials.</p>
-<img src="https://i.imgur.com/HD2QYVC.png" alt="T-Pot Kibana dashboard showing attack telemetry" style="width:100%;border-radius:8px;border:1px solid var(--border);margin:1.25rem 0;display:block;" />
+<img src="https://i.imgur.com/HD2QYVC.png" alt="T-Pot Kibana dashboard showing attack telemetry" />
 <div class="callout callout-success">
-<i class="ti ti-circle-check"></i>
+
 <p><strong>Key finding:</strong> Most attacks went to Cowrie and used weak, common credentials. On this honeypot, attackers relied on automated scanning and known credential lists, not custom techniques.</p>
 </div>
 </div>
 
 <div class="section">
-<div class="section-title"><i class="ti ti-school"></i>Lessons Learned</div>
+<h2 class="section-title">Lessons Learned</h2>
 <ul>
 <li><strong>Scanning starts right away</strong>: internet-facing systems get found and probed almost as soon as they go live</li>
 <li><strong>Attackers try weak credentials first</strong>: root/123456 was the most attempted username and password pair</li>
@@ -283,21 +321,12 @@ dps.sh</code></pre>
 </ul>
 </div>
 
-<div class="proj-nav">
 </div>
-
+<nav class="proj-nav" aria-label="Project">
+<a href="index.html#projects">Back to all projects</a>
+</nav>
 </div>
-</div>
-
-<footer>
-<div class="container-wide">
-<div class="footer-left">© 2026 Joseph Quintana</div>
-<div class="footer-links">
-<a href="https://linkedin.com/in/joseph-q-630610245" class="btn btn-primary" target="_blank"><i class="ti ti-brand-linkedin"></i>LinkedIn</a>
-<a href="mailto:jqui247@wgu.edu" class="btn btn-secondary"><i class="ti ti-mail"></i>Email</a>
-</div>
-</div>
-</footer>
+</main>
 
 </body>
 </html>
