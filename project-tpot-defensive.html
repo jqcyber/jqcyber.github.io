@@ -272,7 +272,7 @@ dps.sh</code></pre>
 <div class="strip-stat"><div class="strip-num">99%</div><div class="strip-lbl">Known attacker IPs</div></div>
 <div class="strip-stat"><div class="strip-num">Cowrie</div><div class="strip-lbl">Most targeted honeypot</div></div>
 </div>
-<p>Further inspection of the SSH brute-force data revealed consistent patterns in attacker behavior. The most commonly used username was <strong>root</strong>, and the most common password attempted was <strong>12456</strong>, highlighting how attackers rely heavily on default and weak credentials when targeting internet-exposed SSH services.</p>
+<p>Further inspection of the SSH brute-force data revealed consistent patterns in attacker behavior. The most commonly used username was <strong>root</strong>, and the most common password attempted was <strong>123456</strong>, highlighting how attackers rely heavily on default and weak credentials when targeting internet-exposed SSH services.</p>
 <div class="callout callout-warn">
 
 <p><strong>Notable:</strong> 99% of source IPs were already flagged as known malicious actors in threat intelligence databases, confirming that most of this activity comes from established botnets and repeat offenders.</p>
@@ -300,7 +300,7 @@ dps.sh</code></pre>
 <h2 class="section-title">Lessons Learned</h2>
 <ul>
 <li><strong>Exposure is instant</strong>: internet-facing systems are discovered and probed almost immediately after going live</li>
-<li><strong>Weak credentials are the primary attack vector</strong>: root/12456 being the top combo shows attackers default to trivially weak credentials first</li>
+<li><strong>Weak credentials are the primary attack vector</strong>: root/123456 being the top combo shows attackers default to trivially weak credentials first</li>
 <li><strong>Known threats dominate</strong>: 99% of source IPs were already in threat intel databases, reinforcing the value of IP reputation feeds</li>
 <li><strong>SSH is a high-value target</strong>: the overwhelming focus on Cowrie underscores how critical SSH hardening is for any internet-exposed host</li>
 <li><strong>Cloud-based honeypots are practical</strong>: Azure made it straightforward to spin up isolated, dedicated VMs without impacting other infrastructure</li>
