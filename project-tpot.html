@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Joseph Quintana — T-Pot Honeypot</title>
+<title>Joseph Quintana | T-Pot Honeypot</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
 <style>
@@ -117,7 +117,7 @@ nav .nav-links { display: none; }
 <div class="proj-eyebrow">Home Lab · Completed</div>
 <h1 class="proj-title">T-Pot Honeypot</h1>
 <div class="proj-role">Threat Intelligence Collection &nbsp;·&nbsp; Azure &nbsp;·&nbsp; Docker &nbsp;·&nbsp; Kibana</div>
-<p class="proj-summary">Deployed T-Pot, a multi-honeypot platform, to lure and monitor real-world threat actors — capturing live attack data, TTPs, and IOCs to build hands-on threat intelligence experience.</p>
+<p class="proj-summary">Deployed T-Pot, a multi-honeypot platform, on Azure to attract real attackers and record their source IPs, credentials, payloads, and techniques.</p>
 
 <div class="proj-info-row">
 <div class="proj-info-item">
@@ -155,8 +155,8 @@ nav .nav-links { display: none; }
 
 <div class="section">
 <div class="section-title"><i class="ti ti-info-circle"></i>Overview</div>
-<p>T-Pot is an all-in-one honeypot platform developed by Deutsche Telekom Security. It bundles over 20 honeypot daemons — including Cowrie, Dionaea, Honeytrap, and more — into a single Docker-based deployment, giving defenders a realistic attack surface to observe adversary behavior in the wild.</p>
-<p>The goal of this project was to deploy T-Pot in a controlled environment, expose it to the internet, and collect real attack data from threat actors — covering everything from brute-force attempts and credential stuffing to malware drops and exploitation attempts.</p>
+<p>T-Pot is an all-in-one honeypot platform from Deutsche Telekom Security. It bundles over 20 honeypot daemons, including Cowrie, Dionaea, and Honeytrap, into a single Docker-based deployment that exposes many fake services for attackers to hit.</p>
+<p>I deployed T-Pot in a controlled environment, exposed it to the internet, and collected real attack data, including brute-force attempts, credential stuffing, malware drops, and exploitation attempts.</p>
 </div>
 
 <div class="section">
@@ -172,16 +172,16 @@ nav .nav-links { display: none; }
 
 <div class="section">
 <div class="section-title"><i class="ti ti-tool"></i>Tools &amp; Environment</div>
-<p>T-Pot was deployed across two Azure cloud virtual machines in a Hive-Sensor architecture — separating the management and visualization layer from the honeypot sensor layer for better isolation and scalability.</p>
+<p>I deployed T-Pot across two Azure virtual machines in a Hive/Sensor architecture. The Hive handles management and visualization, and the Sensor runs the honeypots. Splitting the roles keeps the logs and dashboards off the machine attackers can reach.</p>
 <ul>
-<li><strong>T-Pot</strong> — multi-honeypot platform (Docker-based)</li>
-<li><strong>Microsoft Azure</strong> — cloud hosting for both VMs</li>
-<li><strong>Linux</strong> — host OS for both the Hive and Sensor</li>
-<li><strong>Docker / Docker Compose</strong> — container orchestration</li>
-<li><strong>Kibana</strong> — built-in visualization and log analysis dashboard</li>
-<li><strong>Elasticsearch</strong> — log storage and indexing backend</li>
-<li><strong>Cowrie</strong> — SSH/Telnet honeypot for credential capture</li>
-<li><strong>Dionaea</strong> — malware capture honeypot</li>
+<li><strong>T-Pot</strong>: multi-honeypot platform (Docker-based)</li>
+<li><strong>Microsoft Azure</strong>: cloud hosting for both VMs</li>
+<li><strong>Linux</strong>: host OS for both the Hive and Sensor</li>
+<li><strong>Docker / Docker Compose</strong>: container orchestration</li>
+<li><strong>Kibana</strong>: built-in visualization and log analysis dashboard</li>
+<li><strong>Elasticsearch</strong>: log storage and indexing backend</li>
+<li><strong>Cowrie</strong>: SSH/Telnet honeypot for credential capture</li>
+<li><strong>Dionaea</strong>: malware capture honeypot</li>
 </ul>
 </div>
 
@@ -189,16 +189,16 @@ nav .nav-links { display: none; }
 <div class="section-title"><i class="ti ti-route"></i>Deployment Process</div>
 <div class="callout callout-warn">
 <i class="ti ti-alert-triangle"></i>
-<p><strong>Important:</strong> T-Pot is intentionally exposed to the internet — deploy it on a dedicated, isolated host and never on a machine with access to sensitive data or production networks. A system compromise can never be fully ruled out. Running T-Pot on a home network can attract malicious traffic that puts the rest of the network at risk — a cloud-based VM is strongly recommended.</p>
+<p><strong>Important:</strong> T-Pot is exposed to the internet on purpose. Deploy it on a dedicated, isolated host, never on a machine with access to sensitive data or production networks. A honeypot can itself be compromised, and running one on a home network draws malicious traffic toward everything else on that network. Use a cloud VM.</p>
 </div>
-<p>T-Pot uses a distributed Hive/Sensor architecture. The <strong>Hive</strong> is the central management and visualization node — running Elasticsearch, Kibana, Logstash, and the web UI. The <strong>Sensor</strong> runs the honeypot daemons and ships all captured log data back to the Hive over an encrypted SSH tunnel.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 1 — Provision Azure VMs</p>
-<p>Two Azure virtual machines were provisioned: the Hive (16 GB RAM, 256 GB SSD) and the Sensor (8 GB RAM, 128 GB SSD), each running a clean Linux install. Both VMs were placed on public subnets with no inbound firewall restrictions on honeypot ports, ensuring real attacker traffic could reach the Sensor unobstructed. Management access was restricted to a non-default SSH port.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 2 — Install T-Pot on the Hive</p>
-<p>On the Hive VM, the T-Pot installer was pulled and executed as a non-root user. When prompted for installation type, <strong>H (Hive)</strong> was selected, which installs the full Elastic Stack, NGINX reverse proxy, Kibana dashboards, the GeoIP Attack Map, and all management tooling.</p>
+<p>T-Pot uses a distributed Hive/Sensor architecture. The <strong>Hive</strong> is the central management and visualization node, running Elasticsearch, Kibana, Logstash, and the web UI. The <strong>Sensor</strong> runs the honeypot daemons and ships all captured log data back to the Hive over an encrypted SSH tunnel.</p>
+<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 1: Provision Azure VMs</p>
+<p>I provisioned two Azure VMs, the Hive (16 GB RAM, 256 GB SSD) and the Sensor (8 GB RAM, 128 GB SSD), each on a clean Linux install. Both sat on public subnets with no inbound firewall rules blocking honeypot ports, so attacker traffic could reach the Sensor. I restricted management access to a non-default SSH port.</p>
+<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 2: Install T-Pot on the Hive</p>
+<p>On the Hive VM, I ran the T-Pot installer as a non-root user and chose <strong>H (Hive)</strong> at the installation-type prompt. That option installs the full Elastic Stack, an NGINX reverse proxy, the Kibana dashboards, the GeoIP Attack Map, and the management tools.</p>
 <div class="code-block">
 <div class="code-block-header">
-<span class="code-block-label">bash — Hive installation</span>
+<span class="code-block-label">bash: Hive installation</span>
 </div>
 <pre><code># Run as a non-root user from $HOME
 env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/install.sh)"
@@ -207,12 +207,12 @@ env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/in
 # Set a WEB_USER and password for the T-Pot WebUI (BasicAuth)
 # Installer will configure Docker, Logstash, Kibana, NGINX, and reboot</code></pre>
 </div>
-<p>Once the installer completes, the Hive reboots automatically. T-Pot remaps the system SSH port to <strong>64295</strong> to free up port 22 for the Cowrie SSH honeypot. After reboot, the Kibana dashboard and Attack Map are accessible at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code>.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 3 — Install T-Pot on the Sensor</p>
-<p>On the Sensor VM, the same installer was run, this time selecting <strong>S (Sensor)</strong>. The Sensor installs only the honeypot daemons and the Logstash forwarder — no Kibana or Elastic Stack. The Sensor does not become active until it is linked to the Hive in the next step.</p>
+<p>When the installer finishes, the Hive reboots. T-Pot moves the system SSH port to <strong>64295</strong> so Cowrie can listen on port 22. After the reboot, the Kibana dashboard and Attack Map are at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code>.</p>
+<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 3: Install T-Pot on the Sensor</p>
+<p>On the Sensor VM, I ran the same installer and chose <strong>S (Sensor)</strong>. The Sensor gets only the honeypot daemons and the Logstash forwarder, with no Kibana or Elastic Stack. It stays inactive until it is linked to the Hive in the next step.</p>
 <div class="code-block">
 <div class="code-block-header">
-<span class="code-block-label">bash — Sensor installation</span>
+<span class="code-block-label">bash: Sensor installation</span>
 </div>
 <pre><code># Run on the Sensor VM as a non-root user from $HOME
 env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/install.sh)"
@@ -220,11 +220,11 @@ env bash -c "$(curl -sL https://github.com/telekom-security/tpotce/raw/master/in
 # Select S for Sensor when prompted
 # Reboot once installation completes</code></pre>
 </div>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 4 — Connect the Sensor to the Hive (Distributed Deployment)</p>
-<p>After both VMs are up, the Sensor must be linked to the Hive so it can securely forward its honeypot logs. This is done by running the <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">deploy.sh</code> script from the Hive, which generates SSH keys and configures an encrypted Logstash tunnel between the two nodes.</p>
+<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 4: Connect the Sensor to the Hive</p>
+<p>Once both VMs are up, the Sensor needs a link to the Hive to forward its logs. Running <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">deploy.sh</code> on the Hive generates SSH keys and sets up an encrypted Logstash tunnel between the two nodes.</p>
 <div class="code-block">
 <div class="code-block-header">
-<span class="code-block-label">bash — linking Sensor to Hive</span>
+<span class="code-block-label">bash: linking Sensor to Hive</span>
 </div>
 <pre><code># On the Hive, generate an SSH key for the Sensor connection
 ssh-keygen # leave passphrase empty
@@ -236,14 +236,14 @@ cd ~/tpotce
 # Verify all containers are running on both nodes
 dps.sh</code></pre>
 </div>
-<p>Once linked, the Sensor begins transmitting honeypot event data to the Hive's Elasticsearch instance over a hardened SSH tunnel on port 64295. The Hive user created for this connection is restricted to log forwarding only — it cannot open an interactive shell.</p>
-<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 5 — Verify and Monitor</p>
-<p>With both nodes running, honeypot data flows into Kibana in real time. The T-Pot landing page at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code> provides access to the Kibana dashboard, GeoIP Attack Map, CyberChef, Elasticvue, and SpiderFoot — all pre-configured and ready to use.</p>
+<p>After linking, the Sensor sends honeypot events to the Hive's Elasticsearch over an SSH tunnel on port 64295. The Hive account created for this connection can only forward logs and cannot open an interactive shell.</p>
+<p style="font-size:14px;font-weight:600;color:var(--text);margin-top:1.5rem;margin-bottom:0.5rem;">Step 5: Verify and monitor</p>
+<p>With both nodes running, honeypot data reaches Kibana in real time. The T-Pot landing page at <code style="font-family:var(--mono);font-size:12px;color:var(--accent);">https://&lt;hive-ip&gt;:64297</code> links to the Kibana dashboard, GeoIP Attack Map, CyberChef, Elasticvue, and SpiderFoot, all preconfigured.</p>
 </div>
 
 <div class="section">
 <div class="section-title"><i class="ti ti-chart-bar"></i>Results &amp; Findings</div>
-<p>Shortly after going live, the honeypot began receiving a significant volume of inbound attacks. Analysis of the initial data revealed over <strong>5,000 attacks within the first 24 hours</strong> across the honeypot services, with the vast majority targeting <strong>Cowrie</strong>, the SSH honeypot — confirming that SSH remains one of the most actively scanned and attacked services on the internet.</p>
+<p>Attacks started shortly after the honeypot went live. In the first 24 hours it logged over <strong>5,000 attacks</strong>, and most of them hit <strong>Cowrie</strong>, the SSH honeypot.</p>
 <div class="stat-strip">
 <div class="strip-stat">
 <div class="strip-num">5,000+</div>
@@ -258,28 +258,28 @@ dps.sh</code></pre>
 <div class="strip-lbl">Most targeted honeypot</div>
 </div>
 </div>
-<p>Further inspection of the SSH brute-force data revealed consistent patterns in attacker behavior. The most commonly used username was <strong>root</strong>, and the most common password attempted was <strong>12456</strong> — highlighting how attackers rely heavily on default and weak credentials when targeting internet-exposed SSH services.</p>
+<p>In the SSH brute-force data, the most common username was <strong>root</strong> and the most common password was <strong>123456</strong>. Attackers led with default and weak credentials.</p>
 <div class="callout callout-warn">
 <i class="ti ti-alert-triangle"></i>
-<p><strong>Notable:</strong> 99% of source IPs were already flagged as known malicious actors in threat intelligence databases — confirming that most of this activity comes from established botnets and repeat offenders.</p>
+<p><strong>Notable:</strong> 99% of source IPs were already flagged as malicious in threat intelligence databases, which suggests most of this traffic comes from known botnets and repeat scanners.</p>
 </div>
-<p>The Kibana dashboard provided a real-time visual breakdown of attack telemetry — including origin countries, most targeted ports, top attacker IPs, and credential attempts — turning raw log data into immediately actionable threat intelligence.</p>
+<p>The Kibana dashboard breaks the telemetry down by origin country, targeted port, attacker IP, and attempted credentials.</p>
 <img src="https://i.imgur.com/HD2QYVC.png" alt="T-Pot Kibana dashboard showing attack telemetry" style="width:100%;border-radius:8px;border:1px solid var(--border);margin:1.25rem 0;display:block;" />
 <div class="callout callout-success">
 <i class="ti ti-circle-check"></i>
-<p><strong>Key finding:</strong> The concentration of attacks on Cowrie and the dominance of weak credential attempts confirm that SSH is one of the most targeted services on the internet — and that most attackers rely on automation and known-bad credential lists rather than sophisticated techniques.</p>
+<p><strong>Key finding:</strong> Most attacks went to Cowrie and used weak, common credentials. On this honeypot, attackers relied on automated scanning and known credential lists, not custom techniques.</p>
 </div>
 </div>
 
 <div class="section">
 <div class="section-title"><i class="ti ti-school"></i>Lessons Learned</div>
 <ul>
-<li><strong>Exposure is instant</strong> — internet-facing systems are discovered and probed almost immediately after going live</li>
-<li><strong>Weak credentials are the primary attack vector</strong> — root/12456 being the top combo shows attackers default to trivially weak credentials first</li>
-<li><strong>Known threats dominate</strong> — 99% of source IPs were already in threat intel databases, reinforcing the value of IP reputation feeds</li>
-<li><strong>SSH is a high-value target</strong> — the overwhelming focus on Cowrie underscores how critical SSH hardening is for any internet-exposed host</li>
-<li><strong>Cloud-based honeypots are practical</strong> — Azure made it straightforward to spin up isolated, dedicated VMs without impacting other infrastructure</li>
-<li><strong>Visualization accelerates analysis</strong> — Kibana dashboards turned thousands of raw log lines into immediately readable attack narratives</li>
+<li><strong>Scanning starts right away</strong>: internet-facing systems get found and probed almost as soon as they go live</li>
+<li><strong>Attackers try weak credentials first</strong>: root/123456 was the most attempted username and password pair</li>
+<li><strong>Most attackers were already known</strong>: 99% of source IPs were already in threat intel databases, so an IP reputation feed would have flagged nearly all of them</li>
+<li><strong>SSH draws the most attacks</strong>: most traffic went to Cowrie, so SSH is the first service to harden on an internet-facing host</li>
+<li><strong>Host honeypots in the cloud</strong>: Azure VMs kept the honeypot off my own network and away from other systems</li>
+<li><strong>Dashboards speed up analysis</strong>: Kibana summarized thousands of log lines by country, port, IP, and credential</li>
 </ul>
 </div>
 
