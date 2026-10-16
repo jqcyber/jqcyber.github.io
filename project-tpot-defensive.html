@@ -229,7 +229,7 @@ dps.sh</code></pre>
 <div class="strip-stat"><div class="strip-num">99%</div><div class="strip-lbl">Known attacker IPs</div></div>
 <div class="strip-stat"><div class="strip-num">Cowrie</div><div class="strip-lbl">Most targeted honeypot</div></div>
 </div>
-<p>In the SSH brute-force data, the most common username was <strong>root</strong> and the most common password was <strong>12456</strong>. Attackers led with default and weak credentials.</p>
+<p>In the SSH brute-force data, the most common username was <strong>root</strong> and the most common password was <strong>123456</strong>. Attackers led with default and weak credentials.</p>
 <div class="callout callout-warn">
 <i class="ti ti-alert-triangle"></i>
 <p><strong>Notable:</strong> 99% of source IPs were already flagged as malicious in threat intelligence databases, which suggests most of this traffic comes from known botnets and repeat scanners.</p>
@@ -257,7 +257,7 @@ dps.sh</code></pre>
 <div class="section-title"><i class="ti ti-school"></i>Lessons Learned</div>
 <ul>
 <li><strong>Scanning starts right away</strong>: internet-facing systems get found and probed almost as soon as they go live</li>
-<li><strong>Attackers try weak credentials first</strong>: root/12456 was the most attempted username and password pair</li>
+<li><strong>Attackers try weak credentials first</strong>: root/123456 was the most attempted username and password pair</li>
 <li><strong>Most attackers were already known</strong>: 99% of source IPs were already in threat intel databases, so an IP reputation feed would have flagged nearly all of them</li>
 <li><strong>SSH draws the most attacks</strong>: most traffic went to Cowrie, so SSH is the first service to harden on an internet-facing host</li>
 <li><strong>Host honeypots in the cloud</strong>: Azure VMs kept the honeypot off my own network and away from other systems</li>
